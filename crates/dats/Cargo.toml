@@ -1,0 +1,19 @@
+[package]
+name = "dats"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror = "1.0.35"
+common = { path = "../common" }
+encoding = { path = "../encoding" }
+anyhow = "1.0.71"
+serde = { version = "1.0.162", features = ["derive"] }
+serde_derive = "1.0.162"
+regex = "1.9.1"
+base64 = "0.21.3"
+bitflags = "2.4.0"
+num_enum = "0.7.0"
+
+[dev-dependencies]
+serde_yaml = "0.9.25"

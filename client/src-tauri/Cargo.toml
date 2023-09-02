@@ -1,0 +1,46 @@
+[package]
+name = "xi_tinkerer"
+version = "0.1.0"
+description = "XI Tinkerer"
+authors = ["InoUno"]
+license = "AGPL-3.0"
+repository = ""
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.4", features = [] }
+
+[dependencies]
+tauri = { version = "1.4", features = [
+    "updater",
+    "dialog-message",
+    "fs-all",
+    "path-all",
+    "dialog-open",
+    "shell-open",
+] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9.25"
+glob = "0.3.1"
+dats = { path = "../../crates/dats" }
+processor = { path = "../../crates/processor" }
+anyhow = "1.0.72"
+thiserror = "1.0.44"
+specta = "1.0.5"
+tauri-specta = { version = "1.0.2", features = ["typescript"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+parking_lot = "0.12.1"
+tokio = { version = "1.29.1", features = ["full"] }
+futures = "0.3.28"
+notify = "6.0.1"
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+walkdir = "2.3.3"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

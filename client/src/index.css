@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply overflow-y-hidden;
+  }
+
+  .clickable {
+    @apply hover:cursor-pointer text-blue-200 hover:text-blue-400;
+  }
+
+  .content {
+    @apply bg-slate-900 text-slate-200 p-5;
+  }
+
+  button {
+    @apply my-2 py-1.5 px-3 rounded-lg font-medium 
+        text-center
+        shadow-lg
+        border-2 hover:border-blue-100 border-slate-400 
+        bg-slate-800
+        text-slate-100
+        disabled:hover:cursor-not-allowed
+        disabled:text-slate-600
+        disabled:border-slate-600
+        disabled:hover:border-slate-600;
+  }
+
+  input {
+    @apply block m-1 py-1 px-2 rounded-md
+        bg-slate-700 border border-slate-400 
+        placeholder:text-slate-400
+        focus:border-slate-200 
+        focus:outline-none;
+  }
+
+  table {
+    @apply text-left w-full my-4;
+  }
+
+  thead {
+    @apply bg-slate-700 border-b;
+  }
+
+  tbody {
+    @apply bg-slate-800;
+  }
+
+  tbody > tr {
+    @apply border-b border-slate-600;
+  }
+
+  td,
+  th {
+    @apply px-3 py-1;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-variant: small-caps;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-variant: small-caps;
+    font-weight: 600;
+    text-decoration: underline 1px dashed;
+    text-underline-offset: 5px;
+  }
+}

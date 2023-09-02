@@ -1,0 +1,10 @@
+pub mod dialog;
+pub mod dmsg;
+pub mod dmsg1_string_table;
+pub mod dmsg2_string_table;
+pub mod dmsg3_string_table;
+pub mod entity_names;
+pub mod item_info;
+pub mod status_info;
+pub mod string_table;
+pub mod xistring_table;
