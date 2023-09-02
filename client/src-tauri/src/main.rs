@@ -8,11 +8,14 @@ mod errors;
 mod state;
 
 use parking_lot::RwLock;
-use specta::collect_types;
 use state::AppStateData;
 use tauri::Manager;
-use tauri_specta::ts;
 use tracing_subscriber::EnvFilter;
+
+#[cfg(debug_assertions)]
+use specta::collect_types;
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
 
 pub const RAW_DATA_DIR: &'static str = "raw_data";
 pub const DAT_GENERATION_DIR: &'static str = "generated_dats";
