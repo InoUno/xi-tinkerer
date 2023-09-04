@@ -50,6 +50,10 @@ export function makeDat(datDescriptor: DatDescriptor) {
     return invoke()<null>("make_dat", { datDescriptor })
 }
 
+export function makeAllYamls() {
+    return invoke()<null>("make_all_yamls")
+}
+
 export function makeYaml(datDescriptor: DatDescriptor) {
     return invoke()<null>("make_yaml", { datDescriptor })
 }
