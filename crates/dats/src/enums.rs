@@ -128,6 +128,100 @@ pub enum Element {
     Undecided = 0xFFFF,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, FromPrimitive, IntoPrimitive)]
+#[repr(u8)]
+pub enum AbilityType {
+    General = 0,
+    Job = 1,
+    Pet = 2,
+    Weapon = 3,
+    Trait = 4,
+    Unknown5 = 5,
+    BloodPactRage = 6,
+    Unknown7 = 7,
+    Corsair = 8,
+    CorsairShot = 9,
+    BloodPactWard = 10,
+    Samba = 11,
+    Waltz = 12,
+    Step = 13,
+    Flourish1 = 14,
+    Scholar = 15,
+    Jig = 16,
+    Flourish2 = 17,
+    Monster = 18,
+    Flourish3 = 19,
+    Weaponskill = 20,
+    Rune = 21,
+    Ward = 22,
+    Effusion = 23,
+
+    #[num_enum(catch_all)]
+    #[serde(untagged)]
+    Unknown(u8),
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, FromPrimitive, IntoPrimitive)]
+#[repr(u16)]
+pub enum MagicType {
+    None = 0,
+    WhiteMagic = 1,
+    BlackMagic = 2,
+    SummonerPact = 3,
+    Ninjutsu = 4,
+    BardSong = 5,
+    BlueMagic = 6,
+    Geomancy = 7,
+
+    #[num_enum(catch_all)]
+    #[serde(untagged)]
+    Unknown(u16),
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    FromPrimitive,
+    IntoPrimitive,
+)]
+#[repr(u8)]
+pub enum JobEnum {
+    WAR = 1,
+    MNK = 2,
+    WHM = 3,
+    BLM = 4,
+    RDM = 5,
+    THF = 6,
+    PLD = 7,
+    DRK = 8,
+    BST = 9,
+    BRD = 10,
+    RNG = 11,
+    SAM = 12,
+    NIN = 13,
+    DRG = 14,
+    SMN = 15,
+    BLU = 16,
+    COR = 17,
+    PUP = 18,
+    DNC = 19,
+    SCH = 20,
+    GEO = 21,
+    RUN = 22,
+    MON = 23,
+
+    #[num_enum(catch_all)]
+    #[serde(untagged)]
+    Unknown(u8),
+}
+
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TryFromPrimitive, IntoPrimitive,
 )]

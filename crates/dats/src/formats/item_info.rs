@@ -11,7 +11,7 @@ use serde_derive::{Deserialize, Serialize};
 use crate::{
     dat_format::DatFormat,
     enums::{Element, EnglishArticle, ItemType, PuppetSlot, SkillType},
-    flags::{EquipmentSlot, ItemFlag, Job, Race, ValidTargets},
+    flags::{EquipmentSlot, ItemFlag, JobFlag, Race, ValidTargets},
     serde_base64,
     utils::{get_nibble, rotate_all},
 };
@@ -155,7 +155,7 @@ pub struct EquipmentData {
     level: u16,
     slots: EquipmentSlot,
     races: Race,
-    jobs: Job,
+    jobs: JobFlag,
     superior_level: u16,
     shield_size: u16,
 
@@ -309,7 +309,7 @@ impl ItemInfo {
             let level = data_walker.step::<u16>()?;
             let slots = EquipmentSlot::from_bits(data_walker.step::<u16>()?).unwrap_or_default();
             let races = Race::from_bits(data_walker.step::<u16>()?).unwrap_or_default();
-            let jobs = Job::from_bits(data_walker.step::<u32>()?).unwrap_or_default();
+            let jobs = JobFlag::from_bits(data_walker.step::<u32>()?).unwrap_or_default();
             let superior_level = data_walker.step::<u16>()?;
             let shield_size = data_walker.step::<u16>()?;
 

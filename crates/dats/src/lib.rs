@@ -9,4 +9,5 @@ pub mod image;
 pub mod sanitize_filename;
 mod serde_base64;
 mod serde_flags;
+mod serde_hex;
 mod utils;

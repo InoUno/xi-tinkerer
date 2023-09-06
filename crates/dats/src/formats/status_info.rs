@@ -7,8 +7,11 @@ use common::{
 use encoding::{decoder::Decoder, encoder::Encoder};
 use serde_derive::{Deserialize, Serialize};
 
-use crate::dat_format::DatFormat;
-use crate::{serde_base64, utils::rotate_all};
+use crate::serde_base64;
+use crate::{
+    dat_format::DatFormat,
+    utils::{decode_data_block, encode_data_block},
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StatusInfo {
@@ -87,33 +90,6 @@ impl StatusInfo {
 
         Ok(())
     }
-}
-
-fn get_data_shift_size(bytes: &[u8], offset: usize, size: usize) -> usize {
-    if size < 13 {
-        return 0;
-    }
-
-    let bit_count = u8::count_ones(bytes[offset + 2]) as i32
-        - u8::count_ones(bytes[offset + 11]) as i32
-        + u8::count_ones(bytes[offset + 12]) as i32;
-
-    match bit_count.abs() % 5 {
-        0 => 7,
-        1 => 1,
-        2 => 6,
-        3 => 2,
-        4 => 5,
-        _ => 0,
-    }
-}
-
-fn decode_data_block(bytes: &mut [u8]) {
-    rotate_all(bytes, get_data_shift_size(bytes, 0, bytes.len()));
-}
-
-fn encode_data_block(bytes: &mut [u8]) {
-    rotate_all(bytes, 8 - get_data_shift_size(bytes, 0, bytes.len()));
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
