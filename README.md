@@ -38,6 +38,35 @@ There will most likely be breaking changes as new versions of this tool gets upd
 
 For example, there are currently still unknown fields included in the human-readable files. These fields are necessary data for it to properly generate usable DAT files again, so they have to be included. As understanding of the DAT files progresses, and the meaning of these fields are determined, the field names/content will be changed/renamed. This will currently cause the tool to not be backwards-compatible with the previous versions of human-readable files (since their fields/formats have changed), in which case they will have to re-exported from DATs to be able to generate DATs again.
 
+
+
+## Development setup
+
+The project is built using [Rust](https://www.rust-lang.org/) utilizing the [tauri](https://tauri.app/) toolkit for building the application. The frontend UI is built using the [solidjs](https://www.solidjs.com/) framework.
+
+### Prerequisites
+
+The following software is required to develop and build the application:
+
+- [Rust](https://www.rust-lang.org/learn/get-started) (and cargo) for the backend
+- [Prerequisites for building tauri applications](https://tauri.app/v1/guides/getting-started/prerequisites)
+- [NodeJS](https://nodejs.org/en/download) for the frontend
+- [pnpm](https://pnpm.io/installation) as the NodeJS package manager
+
+### Developing
+
+The backend rust crates can be built/tested/etc with the regular `cargo build`, `cargo test`, etc.
+
+To develop on the frontend, navigate to the `client` directory and install the necessary dependencies with `pnpm install`.
+
+Once they're installed, you can develop the frontend application using the following command, which will provide automatic (hot-)reloading whenever the frontend or tauri-backend crate changes:
+
+```sh
+pnpm tauri dev
+```
+
+
+
 ## Credits
 
 The starting point for the binary structure of some of the DAT formats, which are used in this project,
