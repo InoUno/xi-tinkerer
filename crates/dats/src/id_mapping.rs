@@ -4,8 +4,8 @@ use crate::{
     base::{Dat, DatByZone},
     formats::{
         dialog::Dialog, dmsg2_string_table::Dmsg2StringTable, dmsg3_string_table::Dmsg3StringTable,
-        entity_names::EntityNames, item_info::ItemInfoTable, status_info::StatusInfoTable,
-        xistring_table::XiStringTable,
+        entity_names::EntityNames, item_info::ItemInfoTable, menu_table::MenuTable,
+        status_info::StatusInfoTable, xistring_table::XiStringTable,
     },
 };
 
@@ -69,6 +69,9 @@ pub struct DatIdMapping {
     pub vouchers_and_slips: Dat<ItemInfoTable>,
     pub monipulator: Dat<ItemInfoTable>,
     pub instincts: Dat<ItemInfoTable>,
+
+    // Misc data
+    pub data_menu: Dat<MenuTable>,
 }
 
 static DAT_ID_MAPPING: OnceLock<DatIdMapping> = OnceLock::new();
@@ -165,6 +168,9 @@ impl DatIdMapping {
                 vouchers_and_slips: 55667.into(),
                 monipulator: 55669.into(),
                 instincts: 55670.into(),
+
+                // Misc. data
+                data_menu: 81.into(),
             }
         })
     }

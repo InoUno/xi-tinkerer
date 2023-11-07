@@ -2,7 +2,7 @@ import Sidebar, { NavItem } from "./components/Sidebar";
 import Statusbar from "./components/Statusbar";
 import Home from "./components/Home";
 import { Routes, Route } from "@solidjs/router";
-import { HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencil, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
+import { HiSolidAdjustmentsHorizontal, HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencil, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
 import DatTable from "./components/DatTable";
 import * as commands from "./bindings";
 import Logs from "./components/Logs";
@@ -42,11 +42,16 @@ const navItems: NavItem[] = [
     icon: <HiSolidChatBubbleLeftRight />,
   },
 
-  { header: "Misc. data" },
+  { header: "Other" },
   {
     name: "Items",
     path: "/items",
     icon: <HiSolidShoppingBag />,
+  },
+  {
+    name: "Misc.",
+    path: "/misc",
+    icon: <HiSolidAdjustmentsHorizontal />,
   },
 
 ];
@@ -81,6 +86,19 @@ function App() {
                   <DatTable
                     title="Items"
                     rowsResourceFetcher={() => commands.getItemDats()}
+                    columns={[{ name: "Name", key: "type" }]}
+                    defaultSortColumn="type"
+                    toDatDescriptor={(datDescriptor) => datDescriptor}
+                  />
+                )}
+              ></Route>
+
+              <Route
+                path="/misc"
+                component={() => (
+                  <DatTable
+                    title="Misc."
+                    rowsResourceFetcher={() => commands.getMiscDats()}
                     columns={[{ name: "Name", key: "type" }]}
                     defaultSortColumn="type"
                     toDatDescriptor={(datDescriptor) => datDescriptor}
