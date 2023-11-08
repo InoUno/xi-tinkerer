@@ -236,11 +236,31 @@ impl<'a> Decoder<'a> {
                 self.idx += 1;
             }
 
+            0x90 => {
+                self.tag_no_params("choice-source-gender");
+                self.idx += 1;
+            }
+
+            0x91 => {
+                self.tag_no_params("choice-target-gender");
+                self.idx += 1;
+            }
+
             0x93 => {
                 // Example uses:
                 //      <unknown>0x7F93</unknown> has entered the hostel.<prompt>0</prompt>
                 //      Hi there! I'm <unknown>0x7F93</unknown>, your friendly neighborhood smile sergeant!
                 self.tag_no_params("related-entity");
+                self.idx += 1;
+            }
+
+            0xFB => {
+                self.tag_no_params("entity-wrap-end");
+                self.idx += 1;
+            }
+
+            0xFC => {
+                self.tag_no_params("entity-wrap-start");
                 self.idx += 1;
             }
 

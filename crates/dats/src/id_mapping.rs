@@ -15,6 +15,17 @@ pub struct DatIdMapping {
     pub dialog: DatByZone<Dialog>,
     pub dialog2: DatByZone<Dialog>,
 
+    // Global dialog
+    pub monster_skill_names: Dat<Dialog>,
+    pub status_names_dialog: Dat<Dialog>,
+    pub emote_messages: Dat<Dialog>,
+    pub system_messages_1: Dat<Dialog>,
+    pub system_messages_2: Dat<Dialog>,
+    pub system_messages_3: Dat<Dialog>,
+    pub system_messages_4: Dat<Dialog>,
+    pub unity_dialogs: Dat<Dialog>,
+
+    // String tables
     pub ability_names: Dat<Dmsg3StringTable>,
     pub ability_descriptions: Dat<Dmsg3StringTable>,
     pub area_names: Dat<Dmsg2StringTable>,
@@ -101,6 +112,17 @@ impl DatIdMapping {
                 dialog,
                 dialog2,
 
+                // Global dialog
+                monster_skill_names: 07035.into(),
+                status_names_dialog: 07029.into(),
+                emote_messages: 07025.into(),
+                system_messages_1: 07023.into(),
+                system_messages_2: 07031.into(),
+                system_messages_3: 07021.into(),
+                system_messages_4: 07027.into(),
+                unity_dialogs: 07039.into(),
+
+                // String tables
                 ability_names: 55701.into(),
                 ability_descriptions: 55733.into(),
                 area_names: 55465.into(),

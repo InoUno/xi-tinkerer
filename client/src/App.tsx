@@ -76,6 +76,19 @@ function App() {
               ></Route>
 
               <Route
+                path="/global_dialog"
+                component={() => (
+                  <DatTable
+                    title="Global Dialog"
+                    rowsResourceFetcher={() => commands.getGlobalDialogDats()}
+                    columns={[{ name: "Name", key: "type" }]}
+                    defaultSortColumn="type"
+                    toDatDescriptor={(datDescriptor) => datDescriptor}
+                  />
+                )}
+              ></Route>
+
+              <Route
                 path="/entities"
                 component={() => (
                   <DatTable

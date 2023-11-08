@@ -222,6 +222,26 @@ impl<'a> Encoder<'a> {
                 return Ok(());
             }
 
+            "choice-source-gender" => {
+                self.decoded_bytes.extend([0x7F, 0x90]);
+                return Ok(());
+            }
+
+            "choice-target-gender" => {
+                self.decoded_bytes.extend([0x7F, 0x91]);
+                return Ok(());
+            }
+
+            "entity-wrap-end" => {
+                self.decoded_bytes.extend([0x7F, 0xFB]);
+                return Ok(());
+            }
+
+            "entity-wrap-start" => {
+                self.decoded_bytes.extend([0x7F, 0xFC]);
+                return Ok(());
+            }
+
             "related-entity" => {
                 self.decoded_bytes.extend([0x7F, 0x93]);
                 return Ok(());
@@ -376,6 +396,15 @@ mod tests {
         }
     }
 
+    fn check_roundtrip(string: &str, message: &str) {
+        assert_eq!(
+            &Decoder::decode_dialog(&Encoder::encode_dialog(string).unwrap()).unwrap(),
+            string,
+            "{} (round-trip)",
+            message
+        );
+    }
+
     fn check_encoding_and_roundtrip(bytes: &[u8], string: &str, message: &str) {
         assert_eq!(
             Encoder::encode_dialog(string).unwrap(),
@@ -416,5 +445,17 @@ mod tests {
         );
 
         check_encoding_and_roundtrip(&[0x7F, 0x31, 0x00, 0x07], "${prompt}", "prompt");
+    }
+
+    #[test]
+    fn block_roundtrips() {
+        check_roundtrip(
+            "The ${item-singular-alt: 0[2]} fails to activate.${prompt}",
+            "item singular roundtrip",
+        );
+        check_roundtrip(
+            "The ${item-given-plurality: 0[2], 1[2]} fails to activate woop.${prompt}",
+            "item singular roundtrip",
+        );
     }
 }

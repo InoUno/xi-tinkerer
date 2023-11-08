@@ -59,6 +59,16 @@ pub enum DatDescriptor {
     Monipulator,
     Instincts,
 
+    // Global dialog
+    MonsterSkillNames,
+    StatusNamesDialog,
+    EmoteMessages,
+    SystemMessages1,
+    SystemMessages2,
+    SystemMessages3,
+    SystemMessages4,
+    UnityDialogs,
+
     // Dats by zone
     EntityNames(ZoneId),
     Dialog(ZoneId),
@@ -159,6 +169,15 @@ impl DatDescriptor {
             DatDescriptor::Monipulator => Ok("items/monipulator".to_string()),
             DatDescriptor::Instincts => Ok("items/instincts".to_string()),
 
+            DatDescriptor::MonsterSkillNames => Ok("global_dialog/monster_skill_names".to_string()),
+            DatDescriptor::StatusNamesDialog => Ok("global_dialog/status_names_dialog".to_string()),
+            DatDescriptor::EmoteMessages => Ok("global_dialog/emote_messages".to_string()),
+            DatDescriptor::SystemMessages1 => Ok("global_dialog/system_messages1".to_string()),
+            DatDescriptor::SystemMessages2 => Ok("global_dialog/system_messages2".to_string()),
+            DatDescriptor::SystemMessages3 => Ok("global_dialog/system_messages3".to_string()),
+            DatDescriptor::SystemMessages4 => Ok("global_dialog/system_messages4".to_string()),
+            DatDescriptor::UnityDialogs => Ok("global_dialog/unity_dialogs".to_string()),
+
             DatDescriptor::EntityNames(zone_id) => {
                 Self::get_zoned_file_name(dat_context, "entity_names", zone_id)
             }
@@ -212,6 +231,17 @@ impl DatDescriptor {
                     "vouchers_and_slips" => Some(DatDescriptor::VouchersAndSlips),
                     "monipulator" => Some(DatDescriptor::Monipulator),
                     "instincts" => Some(DatDescriptor::Instincts),
+                    _ => None,
+                },
+                "global_dialog" => match file_name {
+                    "monster_skill_names" => Some(DatDescriptor::MonsterSkillNames),
+                    "status_names_dialog" => Some(DatDescriptor::StatusNamesDialog),
+                    "emote_messages" => Some(DatDescriptor::EmoteMessages),
+                    "system_messages1" => Some(DatDescriptor::SystemMessages1),
+                    "system_messages2" => Some(DatDescriptor::SystemMessages2),
+                    "system_messages3" => Some(DatDescriptor::SystemMessages3),
+                    "system_messages4" => Some(DatDescriptor::SystemMessages4),
+                    "unity_dialogs" => Some(DatDescriptor::UnityDialogs),
                     _ => None,
                 },
                 _ => {
@@ -347,6 +377,33 @@ impl DatDescriptor {
             }
             DatDescriptor::Instincts => converter.use_dat(DatIdMapping::get().instincts.clone()),
 
+            // Global dialog
+            DatDescriptor::MonsterSkillNames => {
+                converter.use_dat(DatIdMapping::get().monster_skill_names.clone())
+            }
+            DatDescriptor::StatusNamesDialog => {
+                converter.use_dat(DatIdMapping::get().status_names_dialog.clone())
+            }
+            DatDescriptor::EmoteMessages => {
+                converter.use_dat(DatIdMapping::get().emote_messages.clone())
+            }
+            DatDescriptor::SystemMessages1 => {
+                converter.use_dat(DatIdMapping::get().system_messages_1.clone())
+            }
+            DatDescriptor::SystemMessages2 => {
+                converter.use_dat(DatIdMapping::get().system_messages_2.clone())
+            }
+            DatDescriptor::SystemMessages3 => {
+                converter.use_dat(DatIdMapping::get().system_messages_3.clone())
+            }
+            DatDescriptor::SystemMessages4 => {
+                converter.use_dat(DatIdMapping::get().system_messages_4.clone())
+            }
+            DatDescriptor::UnityDialogs => {
+                converter.use_dat(DatIdMapping::get().unity_dialogs.clone())
+            }
+
+            // By zone
             DatDescriptor::EntityNames(zone_id) => {
                 converter.use_dat(DatIdMapping::get().entities.get_result(&zone_id)?.clone())
             }
