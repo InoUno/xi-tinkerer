@@ -2,7 +2,7 @@ import Sidebar, { NavItem } from "./components/Sidebar";
 import Statusbar from "./components/Statusbar";
 import Home from "./components/Home";
 import { Routes, Route } from "@solidjs/router";
-import { HiSolidCog8Tooth } from "solid-icons/hi";
+import { HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencil, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
 import DatTable from "./components/DatTable";
 import * as commands from "./bindings";
 import Logs from "./components/Logs";
@@ -13,29 +13,42 @@ const navItems: NavItem[] = [
     path: "/",
     icon: <HiSolidCog8Tooth />,
   },
-  {},
+  { header: "Strings" },
   {
     name: "String tables",
     path: "/strings",
+    icon: <HiSolidPencilSquare />,
   },
-  {},
   {
-    name: "Items",
-    path: "/items",
+    name: "Global dialog",
+    path: "/global_dialog",
+    icon: <HiSolidChatBubbleLeftRight />,
   },
-  {},
+
+  { header: "By zone" },
   {
     name: "Entity names",
     path: "/entities",
+    icon: <HiSolidUser />,
   },
   {
     name: "Dialog",
     path: "/dialog",
+    icon: <HiSolidChatBubbleLeftRight />,
   },
   {
     name: "Dialog (2)",
     path: "/dialog2",
+    icon: <HiSolidChatBubbleLeftRight />,
   },
+
+  { header: "Misc. data" },
+  {
+    name: "Items",
+    path: "/items",
+    icon: <HiSolidShoppingBag />,
+  },
+
 ];
 
 function App() {
