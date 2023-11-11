@@ -65,6 +65,12 @@ pub async fn get_item_dats() -> Result<Vec<DatDescriptor>, AppError> {
 
 #[tauri::command]
 #[specta::specta]
+pub async fn get_global_dialog_dats() -> Result<Vec<DatDescriptor>, AppError> {
+    Ok(dat_query::get_global_dialog_dats())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn get_working_files(state: AppState<'_>) -> Result<Vec<DatDescriptor>, AppError> {
     let dat_context = state
         .read()

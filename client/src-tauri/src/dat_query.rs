@@ -63,6 +63,19 @@ pub fn get_item_dats() -> Vec<DatDescriptor> {
     ]
 }
 
+pub fn get_global_dialog_dats() -> Vec<DatDescriptor> {
+    vec![
+        DatDescriptor::MonsterSkillNames,
+        DatDescriptor::StatusNamesDialog,
+        DatDescriptor::EmoteMessages,
+        DatDescriptor::SystemMessages1,
+        DatDescriptor::SystemMessages2,
+        DatDescriptor::SystemMessages3,
+        DatDescriptor::SystemMessages4,
+        DatDescriptor::UnityDialogs,
+    ]
+}
+
 #[derive(Serialize, specta::Type)]
 pub struct ZoneInfo {
     id: ZoneId,
