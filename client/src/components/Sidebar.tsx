@@ -9,9 +9,19 @@ export interface NavItemLink {
   icon?: JSXElement;
 }
 
-export type NavItem = NavItemLink | {};
+export interface NavItemHeader {
+  header: string,
+}
+
+export type NavItem = NavItemLink | NavItemHeader | {};
 
 function SidebarButton(props: { navItem: NavItem, classExt?: string }) {
+  if ("header" in props.navItem) {
+    return <>
+      <div class="font-bold text-lg italic border-b pt-3 pl-2">{props.navItem.header}</div>
+    </>;
+  }
+
   if (!("path" in props.navItem)) {
     return <hr />;
   }
@@ -39,6 +49,7 @@ function Sidebar(props: { navItems: NavItem[] }) {
       <nav class="flex flex-col flex-grow justify-stretch mb-2 gap-2">
         <div class="flex flex-col flex-grow gap-2">
           <div class="font-bold text-center text-2xl">XI Tinkerer</div>
+          <hr />
           {props.navItems.map((navItem) => (
             <SidebarButton navItem={navItem} />
           ))}
