@@ -33,7 +33,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": ["deb", "appimage", "nsis", "app", "dmg", "updater"],
       "identifier": "inouno.xi-tinkerer",
       "icon": [
         "icons/32x32.png",
