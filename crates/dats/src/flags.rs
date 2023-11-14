@@ -105,7 +105,7 @@ serde_bitflags!(Race);
 
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
-    pub struct Job: u32 {
+    pub struct JobFlag: u32 {
         const All = 0x007FFFFE;
 
         const WAR = 0x00000002;
@@ -142,4 +142,4 @@ bitflags! {
         const JOB31 = 0x80000000;
     }
 }
-serde_bitflags!(Job);
+serde_bitflags!(JobFlag);

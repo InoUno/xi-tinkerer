@@ -53,6 +53,12 @@ pub async fn get_zones_for_type(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn get_misc_dats() -> Result<Vec<DatDescriptor>, AppError> {
+    Ok(dat_query::get_misc_dats())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn get_standalone_string_dats() -> Result<Vec<DatDescriptor>, AppError> {
     Ok(dat_query::get_standalone_string_dats())
 }

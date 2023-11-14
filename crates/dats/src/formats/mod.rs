@@ -5,6 +5,7 @@ pub mod dmsg2_string_table;
 pub mod dmsg3_string_table;
 pub mod entity_names;
 pub mod item_info;
+pub mod menu_table;
 pub mod status_info;
 pub mod string_table;
 pub mod xistring_table;
