@@ -20,7 +20,7 @@ impl DatUsage for DatToYamlConverter {
     fn use_dat<T: DatFormat + Serialize + for<'b> serde::Deserialize<'b>>(
         self,
         dat: Dat<T>,
-    ) -> Result<()> {
+    ) -> Result<PathBuf> {
         let data = self.dat_context.get_data_from_dat(&dat)?;
 
         fs::create_dir_all(&self.raw_data_path.parent().unwrap())?;
@@ -32,9 +32,9 @@ impl DatUsage for DatToYamlConverter {
             )
         })?;
 
-        serde_yaml::to_writer(BufWriter::new(file), &data)?;
+        serde_yaml::to_writer(BufWriter::new(file), &data.dat)?;
 
-        Ok(())
+        Ok(data.path)
     }
 }
 
@@ -48,7 +48,7 @@ impl DatUsage for YamlToDatConverter {
     fn use_dat<T: DatFormat + Serialize + for<'a> serde::Deserialize<'a>>(
         self,
         dat: Dat<T>,
-    ) -> Result<()> {
+    ) -> Result<PathBuf> {
         let relative_dat_path = dat.get_relative_dat_path(&self.dat_context)?;
         let dat_path = self.dat_root_path.join(relative_dat_path);
 
@@ -67,6 +67,6 @@ impl DatUsage for YamlToDatConverter {
 
         dat_file.write_all(&data.to_bytes()?)?;
 
-        Ok(())
+        Ok(dat_path)
     }
 }

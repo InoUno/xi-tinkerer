@@ -5,6 +5,7 @@ import { createStore } from "solid-js/store";
 export interface Log {
     descriptor: string,
     message: string,
+    datPath: string,
     isError?: boolean,
 }
 
@@ -21,10 +22,15 @@ export function createLogsStore() {
                 descriptor += ` (${payload.dat_descriptor.index})`;
             }
 
-            let message;
+            let message, datPath;
             let isError;
-            if (payload.state == "Finished") {
-                message = "Success";
+            if ("Finished" in payload.state) {
+                if (payload.output_kind == "Dat") {
+                    message = "Finished generation";
+                } else {
+                    message = "Finished export";
+                }
+                datPath = payload.state.Finished;
             } else if ("Error" in payload.state) {
                 message = payload.state.Error;
                 isError = true;
@@ -32,7 +38,8 @@ export function createLogsStore() {
 
             let log: Log = {
                 descriptor,
-                message: message!,
+                message: message || "",
+                datPath: datPath || "",
                 isError
             };
             setLogs(logs.length, log);

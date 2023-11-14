@@ -29,6 +29,12 @@ pub struct ZoneName {
     pub file_name: String,
 }
 
+#[derive(Debug, Clone)]
+pub struct ExtractedDat<T> {
+    pub dat: T,
+    pub path: PathBuf,
+}
+
 impl DatContext {
     fn insert_into_id_map(
         id_map: &mut HashMap<DatId, DatPath>,
@@ -136,7 +142,7 @@ impl DatContext {
         let zone_data = result.get_data_from_dat(&DatIdMapping::get().area_names)?;
 
         let mut previous_names = HashSet::new();
-        for (zone_id, (_, zone_string_list)) in zone_data.lists.into_iter().enumerate() {
+        for (zone_id, (_, zone_string_list)) in zone_data.dat.lists.into_iter().enumerate() {
             let display_content = zone_string_list
                 .content
                 .first()
@@ -178,8 +184,14 @@ impl DatContext {
             .map_err(|err| DatError::DatLoadFailed(id.clone(), err))
     }
 
-    pub fn get_data_from_dat<T: DatFormat>(&self, id: &Dat<T>) -> Result<T, DatError> {
-        T::from_path(&self.get_dat_path(id)?).map_err(|err| DatError::DatLoadFailed(id.into(), err))
+    pub fn get_data_from_dat<T: DatFormat>(
+        &self,
+        id: &Dat<T>,
+    ) -> Result<ExtractedDat<T>, DatError> {
+        let path = self.get_dat_path(id)?;
+        T::from_path(&path)
+            .map(|dat| ExtractedDat { dat, path })
+            .map_err(|err| DatError::DatLoadFailed(id.into(), err))
     }
 
     pub fn check_dat<T: DatFormat>(&self, id: &Dat<T>) -> Result<(), DatError> {
