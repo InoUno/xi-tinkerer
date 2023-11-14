@@ -30,7 +30,7 @@ pub enum DatProcessorOutputKind {
 #[derive(Debug, Clone, specta::Type, Serialize, Deserialize)]
 pub enum DatProcessingState {
     Working,
-    Finished,
+    Finished(PathBuf),
     Error(String),
 }
 
@@ -65,10 +65,10 @@ impl DatProcessor {
         self.pool.lock().unwrap().execute(move || {
             let res = dat_descriptor
                 .dat_to_yaml(dat_context, raw_data_root_path)
-                .map(|_| DatProcessorMessage {
+                .map(|path| DatProcessorMessage {
                     dat_descriptor,
                     output_kind: DatProcessorOutputKind::Yaml,
-                    state: DatProcessingState::Finished,
+                    state: DatProcessingState::Finished(path),
                 })
                 .unwrap_or_else(|err| DatProcessorMessage {
                     dat_descriptor,
@@ -102,10 +102,10 @@ impl DatProcessor {
         self.pool.lock().unwrap().execute(move || {
             let res = dat_descriptor
                 .yaml_to_dat(dat_context, raw_data_root_path, dat_root_path)
-                .map(|_| DatProcessorMessage {
+                .map(|path| DatProcessorMessage {
                     dat_descriptor,
                     output_kind: DatProcessorOutputKind::Dat,
-                    state: DatProcessingState::Finished,
+                    state: DatProcessingState::Finished(path),
                 })
                 .unwrap_or_else(|err| DatProcessorMessage {
                     dat_descriptor,

@@ -28,8 +28,9 @@ function Logs() {
       <table>
         <thead>
           <tr>
-            <th>DAT</th>
+            <th>Name</th>
             <th>Message</th>
+            <th>DAT path</th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,7 @@ function Logs() {
             <tr>
               <td>{log.descriptor}</td>
               <td>{log.message}</td>
+              <td><span class="font-mono text-xs">{log.datPath}</span></td>
             </tr>
           )}
         </tbody>

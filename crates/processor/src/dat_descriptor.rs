@@ -82,7 +82,7 @@ pub trait DatUsage {
     fn use_dat<T: DatFormat + Serialize + for<'a> serde::Deserialize<'a>>(
         self,
         dat: Dat<T>,
-    ) -> Result<()>;
+    ) -> Result<PathBuf>;
 }
 
 impl DatDescriptor {
@@ -90,7 +90,7 @@ impl DatDescriptor {
         &self,
         dat_context: Arc<DatContext>,
         raw_data_root_path: PathBuf,
-    ) -> Result<()> {
+    ) -> Result<PathBuf> {
         let data_path = raw_data_root_path.join(self.get_relative_path(&dat_context)? + ".yml");
         self.convert_with(DatToYamlConverter {
             dat_context,
@@ -103,7 +103,7 @@ impl DatDescriptor {
         dat_context: Arc<DatContext>,
         raw_data_root_path: PathBuf,
         dat_root_path: PathBuf,
-    ) -> Result<()> {
+    ) -> Result<PathBuf> {
         let raw_data_path = raw_data_root_path.join(self.get_relative_path(&dat_context)? + ".yml");
         self.convert_with(YamlToDatConverter {
             dat_context,
@@ -295,7 +295,7 @@ impl DatDescriptor {
         }
     }
 
-    fn convert_with<T: DatUsage>(self, converter: T) -> Result<()> {
+    fn convert_with<T: DatUsage>(self, converter: T) -> Result<PathBuf> {
         match self {
             DatDescriptor::DataMenu => converter.use_dat(DatIdMapping::get().data_menu.clone()),
 
