@@ -14,9 +14,14 @@ function Home() {
       <hr />
       <ProjectSelect />
       <hr />
-      <button disabled={totalProcessingCount() > 0} onclick={() => totalProcessingCount() == 0 ? commands.makeAllDats() : undefined}>
-        Make all DATs
-      </button>
+      <div class="flex flex-row space-x-5">
+        <button disabled={totalProcessingCount() > 0} onclick={() => totalProcessingCount() == 0 ? commands.makeAllYamls() : undefined}>
+          Make all YAMLs
+        </button>
+        <button disabled={totalProcessingCount() > 0} onclick={() => totalProcessingCount() == 0 ? commands.makeAllDats() : undefined}>
+          Make all DATs
+        </button>
+      </div>
     </div>
   );
 }

@@ -171,6 +171,42 @@ pub async fn make_dat(dat_descriptor: DatDescriptor, state: AppState<'_>) -> Res
 
 #[tauri::command]
 #[specta::specta]
+pub async fn make_all_yamls(state: AppState<'_>) -> Result<(), AppError> {
+    let dat_context = state
+        .read()
+        .dat_context
+        .clone()
+        .ok_or(anyhow!("No DAT context."))?;
+
+    let project_path = state
+        .read()
+        .project_path
+        .as_ref()
+        .ok_or(anyhow!("No project path specified."))?
+        .clone();
+
+    let processor = state.read().processor.clone();
+
+    let raw_data_dir = project_path.join(RAW_DATA_DIR);
+
+    Ok(walkdir::WalkDir::new(&raw_data_dir)
+        .into_iter()
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            DatDescriptor::from_path(&entry.into_path(), &raw_data_dir, &dat_context)
+        })
+        .for_each(|dat_descriptor| {
+            let dat_context = dat_context.clone();
+            processor.dat_to_yaml(
+                dat_descriptor,
+                dat_context,
+                project_path.join(RAW_DATA_DIR),
+            );
+        }))
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn make_yaml(dat_descriptor: DatDescriptor, state: AppState<'_>) -> Result<(), AppError> {
     let dat_context = state
         .read()

@@ -36,6 +36,7 @@ fn main() {
             commands::get_working_files,
             commands::make_all_dats,
             commands::make_dat,
+            commands::make_all_yamls,
             commands::make_yaml,
         ],
         "../src/bindings.ts",
@@ -60,6 +61,7 @@ fn main() {
             commands::get_working_files,
             commands::make_all_dats,
             commands::make_dat,
+            commands::make_all_yamls,
             commands::make_yaml,
         ])
         .setup(|app| {
