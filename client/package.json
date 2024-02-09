@@ -12,13 +12,13 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@solidjs/router": "^0.8.2",
-    "@tauri-apps/api": "^1.4.0",
+    "@tauri-apps/api": "^1.5.3",
     "fuse.js": "^6.6.2",
     "solid-icons": "^1.0.11",
     "solid-js": "^1.7.8"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.6",
+    "@tauri-apps/cli": "^1.5.9",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
