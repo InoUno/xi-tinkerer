@@ -28,19 +28,31 @@ enum Commands {
     },
 }
 
-pub fn check_cli() -> Result<bool> {
+fn attach_console() {
+    #[cfg(windows)]
+    {
+        use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+        let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+    }
+}
+
+pub fn check_cli() {
+    if std::env::args_os().len() > 1 {
+        // Ensure a console is attached on Windows
+        attach_console();
+    }
+
     let args = Args::parse();
 
     if let Some(command) = args.command {
         match command {
             Commands::ExportDats { project_dir } => {
-                export_all_dats(project_dir)?;
+                export_all_dats(project_dir).unwrap();
             }
         }
-        return Ok(true);
-    }
 
-    return Ok(false);
+        std::process::exit(0);
+    }
 }
 
 pub fn export_all_dats(project_dir: String) -> Result<()> {

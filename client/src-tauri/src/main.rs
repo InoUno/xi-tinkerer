@@ -25,9 +25,7 @@ pub const DAT_GENERATION_DIR: &'static str = "generated_dats";
 pub const ZONE_MAPPING_FILE: &'static str = "zones.yml";
 
 fn main() {
-    if check_cli().unwrap() {
-        return;
-    }
+    check_cli();
 
     #[cfg(debug_assertions)]
     ts::export(

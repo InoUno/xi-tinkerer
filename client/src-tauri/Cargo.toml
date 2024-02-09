@@ -44,3 +44,6 @@ clap = { version = "4.5.0", features = ["derive"] }
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target."cfg(windows)".dependencies]
+windows = { version = "0.52.0", features = ["Win32_System_Console", "Win32_Foundation"] }
