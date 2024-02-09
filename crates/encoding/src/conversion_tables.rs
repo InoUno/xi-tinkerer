@@ -37,7 +37,7 @@ impl ConversionTable {
                     if first_short == 0xFFFE {
                         let second_table = Self::get_table(first_byte);
 
-                        if second_table as *const [u8] == &EMPTY_TABLE as *const [u8] {
+                        if second_table == &EMPTY_TABLE {
                             // It's the empty table.
                             continue;
                         }
