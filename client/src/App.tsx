@@ -2,7 +2,7 @@ import Sidebar, { NavItem } from "./components/Sidebar";
 import Statusbar from "./components/Statusbar";
 import Home from "./components/Home";
 import { Routes, Route } from "@solidjs/router";
-import { HiSolidAdjustmentsHorizontal, HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencil, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
+import { HiSolidAdjustmentsHorizontal, HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
 import DatTable from "./components/DatTable";
 import * as commands from "./bindings";
 import Logs from "./components/Logs";
