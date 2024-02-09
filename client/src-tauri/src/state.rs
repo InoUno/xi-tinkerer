@@ -37,7 +37,7 @@ impl AppStateData {
         let dat_context = persistence
             .ffxi_path
             .as_ref()
-            .and_then(|ffxi_path| DatContext::from_path(ffxi_path.clone()).ok())
+            .and_then(|ffxi_path| DatContext::from_ffxi_path(ffxi_path.clone()).ok())
             .map(|context| Arc::new(context));
 
         let (tx, rx) = std::sync::mpsc::channel();
@@ -52,7 +52,7 @@ impl AppStateData {
             let _ = watcher.watch(&project_path, RecursiveMode::Recursive);
         }
 
-        let (tx, rx) = mpsc::sync_channel(256);
+        let (tx, rx) = mpsc::channel();
         let processor = Arc::new(DatProcessor::new(tx));
 
         let app_handle = app.handle();
@@ -78,7 +78,7 @@ impl AppStateData {
         ffxi_path: Option<PathBuf>,
     ) -> Result<Option<PathBuf>, AppError> {
         let context = if let Some(ffxi_path) = ffxi_path {
-            Some(Arc::new(DatContext::from_path(ffxi_path)?))
+            Some(Arc::new(DatContext::from_ffxi_path(ffxi_path)?))
         } else {
             None
         };

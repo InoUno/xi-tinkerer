@@ -1,6 +1,6 @@
 use std::{
     path::PathBuf,
-    sync::{mpsc::SyncSender, Arc, Mutex},
+    sync::{mpsc::Sender, Arc, Mutex},
 };
 
 use crate::dat_descriptor::DatDescriptor;
@@ -10,7 +10,8 @@ use threadpool::ThreadPool;
 
 #[derive(Debug)]
 pub struct DatProcessor {
-    tx: SyncSender<DatProcessorMessage>,
+    tx: Sender<DatProcessorMessage>,
+    pub is_preprocessing: bool,
     pool: Mutex<ThreadPool>,
 }
 
@@ -35,9 +36,10 @@ pub enum DatProcessingState {
 }
 
 impl DatProcessor {
-    pub fn new(tx: SyncSender<DatProcessorMessage>) -> Self {
+    pub fn new(tx: Sender<DatProcessorMessage>) -> Self {
         Self {
             tx,
+            is_preprocessing: false,
             pool: Mutex::new(
                 threadpool::Builder::new()
                     .thread_name("dat-processor".to_string())
@@ -100,7 +102,7 @@ impl DatProcessor {
         }
 
         self.pool.lock().unwrap().execute(move || {
-            let res = dat_descriptor
+            let res: DatProcessorMessage = dat_descriptor
                 .yaml_to_dat(dat_context, raw_data_root_path, dat_root_path)
                 .map(|path| DatProcessorMessage {
                     dat_descriptor,
@@ -117,5 +119,52 @@ impl DatProcessor {
                 eprintln!("Failed to notify about YAML to DAT result: {err}");
             }
         });
+    }
+
+    pub fn all_yaml_to_dats(
+        &mut self,
+        dat_context: Arc<DatContext>,
+        in_dir: &PathBuf,
+        out_dir: &PathBuf,
+    ) -> usize {
+        self.is_preprocessing = true;
+
+        let mut count = 0;
+
+        walkdir::WalkDir::new(&in_dir)
+            .into_iter()
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                if entry.file_type().is_dir() {
+                    return None;
+                }
+
+                let path = entry.into_path();
+                let dat_descriptor = DatDescriptor::from_path(&path, &in_dir, &dat_context);
+
+                if dat_descriptor.is_none() {
+                    eprintln!(
+                        "Could not map the following file to a DAT: {}",
+                        path.to_string_lossy()
+                    );
+                }
+                dat_descriptor
+            })
+            .for_each(|dat_descriptor| {
+                let dat_context = dat_context.clone();
+                let raw_data_root_path = in_dir.clone();
+                let dat_root_path = out_dir.clone();
+                count += 1;
+
+                self.yaml_to_dat(
+                    dat_descriptor,
+                    dat_context,
+                    raw_data_root_path,
+                    dat_root_path,
+                );
+            });
+
+        self.is_preprocessing = false;
+        count
     }
 }

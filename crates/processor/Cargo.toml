@@ -12,3 +12,4 @@ serde = "1.0.180"
 serde_yaml = "0.9.25"
 specta = "1.0.5"
 tokio = { version = "1.29.1", features = ["full"] }
+walkdir = "2.4.0"

@@ -13,6 +13,7 @@ use crate::{
     sanitize_filename::sanitize_filename,
 };
 use anyhow::{anyhow, Result};
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub struct DatContext {
@@ -23,7 +24,7 @@ pub struct DatContext {
     pub zone_id_to_name: HashMap<ZoneId, ZoneName>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ZoneName {
     pub display_name: String,
     pub file_name: String,
@@ -36,20 +37,47 @@ pub struct ExtractedDat<T> {
 }
 
 impl DatContext {
-    pub fn from_path(mut ffxi_path: PathBuf) -> Result<Self> {
+    pub fn from_ffxi_path(ffxi_path: PathBuf) -> Result<Self> {
+        let mut context = Self::from_path_without_zone_mappings(ffxi_path)?;
+
+        context.build_zone_mappings()?;
+
+        Ok(context)
+    }
+
+    pub fn from_path_and_zone_mappings(
+        ffxi_path: PathBuf,
+        zone_id_to_name: HashMap<ZoneId, ZoneName>,
+    ) -> Result<Self> {
+        let mut context = Self::from_path_without_zone_mappings(ffxi_path)?;
+
+        context.zone_id_to_name = zone_id_to_name;
+
+        for (zone_id, zone_names) in &context.zone_id_to_name {
+            context
+                .zone_name_to_id_map
+                .insert(zone_names.file_name.clone(), zone_id.clone());
+        }
+
+        Ok(context)
+    }
+
+    fn from_path_without_zone_mappings(mut ffxi_path: PathBuf) -> Result<Self> {
         ffxi_path = Self::find_ffxi_path(ffxi_path)?;
 
         let id_map = Self::build_rom_id_map(&ffxi_path)?;
 
-        let mut result = Self {
+        Ok(Self {
             ffxi_path,
             id_map,
             zone_name_to_id_map: Default::default(),
             zone_id_to_name: Default::default(),
-        };
+        })
+    }
 
+    fn build_zone_mappings(&mut self) -> Result<()> {
         // Initialize the mappings between zone ID and name
-        let zone_data = result.get_data_from_dat(&DatIdMapping::get().area_names)?;
+        let zone_data = self.get_data_from_dat(&DatIdMapping::get().area_names)?;
 
         let mut previous_names = HashSet::new();
         for (zone_id, (_, zone_string_list)) in zone_data.dat.lists.into_iter().enumerate() {
@@ -78,15 +106,13 @@ impl DatContext {
                 display_name,
             };
 
-            result
-                .zone_id_to_name
+            self.zone_id_to_name
                 .insert(zone_id as u16, zone_name.clone());
-            result
-                .zone_name_to_id_map
+            self.zone_name_to_id_map
                 .insert(zone_name.file_name, zone_id as u16);
         }
 
-        Ok(result)
+        Ok(())
     }
 
     pub fn find_ffxi_path(mut ffxi_path: PathBuf) -> Result<PathBuf> {

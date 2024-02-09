@@ -2,11 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod app_persistence;
+mod cli;
 mod commands;
 mod dat_query;
 mod errors;
 mod state;
 
+use cli::check_cli;
 use parking_lot::RwLock;
 use state::AppStateData;
 use tauri::Manager;
@@ -20,8 +22,13 @@ use tauri_specta::ts;
 pub const RAW_DATA_DIR: &'static str = "raw_data";
 pub const LOOKUP_TABLE_DIR: &'static str = "lookup_tables";
 pub const DAT_GENERATION_DIR: &'static str = "generated_dats";
+pub const ZONE_MAPPING_FILE: &'static str = "zones.yml";
 
 fn main() {
+    if check_cli().unwrap() {
+        return;
+    }
+
     #[cfg(debug_assertions)]
     ts::export(
         collect_types![

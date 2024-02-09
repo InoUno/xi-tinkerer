@@ -1,15 +1,19 @@
-use std::{fs, path::PathBuf};
+use std::{
+    collections::BTreeMap,
+    fs::{self, File},
+    path::PathBuf,
+};
 
 use anyhow::{anyhow, Result};
-use dats::context::DatContext;
 use processor::{dat_descriptor::DatDescriptor, processor::DatProcessorMessage};
+use tracing_subscriber::fmt::MakeWriter;
 
 use crate::{
     app_persistence::PersistenceData,
     dat_query::{self, ZoneInfo},
     errors::AppError,
     state::{AppState, FileNotification},
-    DAT_GENERATION_DIR, LOOKUP_TABLE_DIR, RAW_DATA_DIR,
+    DAT_GENERATION_DIR, LOOKUP_TABLE_DIR, RAW_DATA_DIR, ZONE_MAPPING_FILE,
 };
 
 #[tauri::command]
@@ -208,11 +212,14 @@ pub async fn copy_lookup_tables(state: AppState<'_>) -> Result<(), AppError> {
         .ok_or(anyhow!("No project path specified."))?
         .clone();
     lookup_table_dir.push(LOOKUP_TABLE_DIR);
-    fs::remove_dir_all(&lookup_table_dir)
-        .map_err(|err| anyhow!("Unable to clear out old lookup tables: {}", err))?;
 
-    let ffxi_path = DatContext::find_ffxi_path(dat_context.ffxi_path.clone())?;
+    // Clean old lookup table directory, if it already exists.
+    if lookup_table_dir.exists() {
+        fs::remove_dir_all(&lookup_table_dir)
+            .map_err(|err| anyhow!("Unable to clear out old lookup tables: {}", err))?;
+    }
 
+    // Helper function for copying a file and checking for errors
     let copy_lookup_table = |sub_path: &str| -> Result<(), AppError> {
         let to_path = lookup_table_dir.join(sub_path);
         fs::create_dir_all(&to_path.parent().unwrap()).map_err(|err| {
@@ -223,7 +230,7 @@ pub async fn copy_lookup_tables(state: AppState<'_>) -> Result<(), AppError> {
             )
         })?;
 
-        let from_path = ffxi_path.join(sub_path);
+        let from_path = dat_context.ffxi_path.join(sub_path);
         fs::copy(&from_path, lookup_table_dir.join(sub_path)).map_err(|err| {
             anyhow!(
                 "Unable to copy lookup table file '{}': {}",
@@ -243,7 +250,7 @@ pub async fn copy_lookup_tables(state: AppState<'_>) -> Result<(), AppError> {
     for rom_id in 2u8.. {
         let vtable_sub_path = format!("ROM{}/VTABLE{}.DAT", rom_id, rom_id);
 
-        let vtable_dat_path = ffxi_path.join(&vtable_sub_path);
+        let vtable_dat_path = dat_context.ffxi_path.join(&vtable_sub_path);
         if !vtable_dat_path.exists() {
             // Break out when no more lookup tables can be found
             break;
@@ -253,6 +260,15 @@ pub async fn copy_lookup_tables(state: AppState<'_>) -> Result<(), AppError> {
         let ftable_sub_path = format!("ROM{}/FTABLE{}.DAT", rom_id, rom_id);
         copy_lookup_table(&ftable_sub_path)?;
     }
+
+    // Dump zones mapping file
+    let zone_map_file = lookup_table_dir.join(ZONE_MAPPING_FILE);
+    let zone_file = File::create(zone_map_file)
+        .map_err(|err| anyhow!("Unable to open zone mapping file: {}", err))?;
+
+    let sorted_zones: BTreeMap<_, _> = dat_context.zone_id_to_name.iter().collect();
+    serde_yaml::to_writer(zone_file.make_writer(), &sorted_zones)
+        .map_err(|err| anyhow!("Unable to write zone mapping file: {}", err))?;
 
     Ok(())
 }
