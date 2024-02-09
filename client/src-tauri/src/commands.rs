@@ -1,15 +1,15 @@
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 
 use anyhow::{anyhow, Result};
+use dats::context::DatContext;
 use processor::{dat_descriptor::DatDescriptor, processor::DatProcessorMessage};
 
 use crate::{
     app_persistence::PersistenceData,
-    dat_query,
-    dat_query::ZoneInfo,
+    dat_query::{self, ZoneInfo},
     errors::AppError,
     state::{AppState, FileNotification},
-    {DAT_GENERATION_DIR, RAW_DATA_DIR},
+    DAT_GENERATION_DIR, LOOKUP_TABLE_DIR, RAW_DATA_DIR,
 };
 
 #[tauri::command]
@@ -188,6 +188,71 @@ pub async fn make_yaml(dat_descriptor: DatDescriptor, state: AppState<'_>) -> Re
     let processor = state.read().processor.clone();
 
     processor.dat_to_yaml(dat_descriptor, dat_context, project_path.join(RAW_DATA_DIR));
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn copy_lookup_tables(state: AppState<'_>) -> Result<(), AppError> {
+    let dat_context = state
+        .read()
+        .dat_context
+        .clone()
+        .ok_or(anyhow!("No DAT context."))?;
+
+    let mut lookup_table_dir = state
+        .read()
+        .project_path
+        .as_ref()
+        .ok_or(anyhow!("No project path specified."))?
+        .clone();
+    lookup_table_dir.push(LOOKUP_TABLE_DIR);
+    fs::remove_dir_all(&lookup_table_dir)
+        .map_err(|err| anyhow!("Unable to clear out old lookup tables: {}", err))?;
+
+    let ffxi_path = DatContext::find_ffxi_path(dat_context.ffxi_path.clone())?;
+
+    let copy_lookup_table = |sub_path: &str| -> Result<(), AppError> {
+        let to_path = lookup_table_dir.join(sub_path);
+        fs::create_dir_all(&to_path.parent().unwrap()).map_err(|err| {
+            anyhow!(
+                "Unable to create directory for lookup table '{}': {}",
+                to_path.to_string_lossy(),
+                err
+            )
+        })?;
+
+        let from_path = ffxi_path.join(sub_path);
+        fs::copy(&from_path, lookup_table_dir.join(sub_path)).map_err(|err| {
+            anyhow!(
+                "Unable to copy lookup table file '{}': {}",
+                from_path.to_string_lossy(),
+                err
+            )
+        })?;
+
+        Ok(())
+    };
+
+    // Handle first non-numbered tables
+    copy_lookup_table("VTABLE.DAT")?;
+    copy_lookup_table("FTABLE.DAT")?;
+
+    // Handle remaining numbered tables in each corresponding ROM folder
+    for rom_id in 2u8.. {
+        let vtable_sub_path = format!("ROM{}/VTABLE{}.DAT", rom_id, rom_id);
+
+        let vtable_dat_path = ffxi_path.join(&vtable_sub_path);
+        if !vtable_dat_path.exists() {
+            // Break out when no more lookup tables can be found
+            break;
+        }
+        copy_lookup_table(&vtable_sub_path)?;
+
+        let ftable_sub_path = format!("ROM{}/FTABLE{}.DAT", rom_id, rom_id);
+        copy_lookup_table(&ftable_sub_path)?;
+    }
 
     Ok(())
 }

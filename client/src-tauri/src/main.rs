@@ -18,6 +18,7 @@ use specta::collect_types;
 use tauri_specta::ts;
 
 pub const RAW_DATA_DIR: &'static str = "raw_data";
+pub const LOOKUP_TABLE_DIR: &'static str = "lookup_tables";
 pub const DAT_GENERATION_DIR: &'static str = "generated_dats";
 
 fn main() {
@@ -37,6 +38,7 @@ fn main() {
             commands::make_all_dats,
             commands::make_dat,
             commands::make_yaml,
+            commands::copy_lookup_tables,
         ],
         "../src/bindings.ts",
     )
@@ -61,6 +63,7 @@ fn main() {
             commands::make_all_dats,
             commands::make_dat,
             commands::make_yaml,
+            commands::copy_lookup_tables,
         ])
         .setup(|app| {
             let app_state = RwLock::new(AppStateData::new(app));

@@ -36,6 +36,112 @@ pub struct ExtractedDat<T> {
 }
 
 impl DatContext {
+    pub fn from_path(mut ffxi_path: PathBuf) -> Result<Self> {
+        ffxi_path = Self::find_ffxi_path(ffxi_path)?;
+
+        let id_map = Self::build_rom_id_map(&ffxi_path)?;
+
+        let mut result = Self {
+            ffxi_path,
+            id_map,
+            zone_name_to_id_map: Default::default(),
+            zone_id_to_name: Default::default(),
+        };
+
+        // Initialize the mappings between zone ID and name
+        let zone_data = result.get_data_from_dat(&DatIdMapping::get().area_names)?;
+
+        let mut previous_names = HashSet::new();
+        for (zone_id, (_, zone_string_list)) in zone_data.dat.lists.into_iter().enumerate() {
+            let display_content = zone_string_list
+                .content
+                .first()
+                .ok_or_else(|| anyhow!("No string found for zone {}.", zone_id))?
+                .clone();
+
+            let mut display_name = match display_content {
+                Dmsg2Content::String { string } => string,
+                Dmsg2Content::Flags { .. } => {
+                    return Err(anyhow!("Expected string content for zone name."))
+                }
+            };
+
+            if display_name.is_empty() {
+                display_name = format!("_unnamed_ID-{}", zone_id);
+            } else if previous_names.contains(&display_name) {
+                display_name = format!("{} ID-{}", display_name, zone_id);
+            }
+            previous_names.insert(display_name.clone());
+
+            let zone_name = ZoneName {
+                file_name: sanitize_filename(&display_name),
+                display_name,
+            };
+
+            result
+                .zone_id_to_name
+                .insert(zone_id as u16, zone_name.clone());
+            result
+                .zone_name_to_id_map
+                .insert(zone_name.file_name, zone_id as u16);
+        }
+
+        Ok(result)
+    }
+
+    pub fn find_ffxi_path(mut ffxi_path: PathBuf) -> Result<PathBuf> {
+        // If there's a VTABLE.DAT in this folder, it's assumed to be correct already.
+        if ffxi_path.join("VTABLE.DAT").exists() {
+            return Ok(ffxi_path);
+        }
+
+        match ffxi_path
+            .iter()
+            .last()
+            .and_then(|part| part.to_str())
+            .ok_or(anyhow!("Invalid path"))?
+        {
+            "FINAL FANTASY XI" => {
+                // It should be the correct folder already
+            }
+            "SquareEnix" => {
+                ffxi_path.push("FINAL FANTASY XI");
+            }
+            _ => {
+                ffxi_path.push("SquareEnix");
+                ffxi_path.push("FINAL FANTASY XI");
+                if !ffxi_path.exists() {
+                    return Err(anyhow!("Could not find a FFXI install at the given path."));
+                }
+            }
+        };
+
+        Ok(ffxi_path)
+    }
+
+    pub fn build_rom_id_map(ffxi_path: &PathBuf) -> Result<HashMap<DatId, DatPath>> {
+        let mut id_map = HashMap::new();
+
+        // Handle first non-numbered tables
+        let vtable_dat_path = ffxi_path.join("VTABLE.DAT");
+        let ftable_dat_path = ffxi_path.join("FTABLE.DAT");
+
+        // Build up DAT map from lookup table files
+        Self::insert_into_id_map(&mut id_map, 1, vtable_dat_path, ftable_dat_path)?;
+
+        for rom_id in 2u8.. {
+            let vtable_dat_path = ffxi_path.join(format!("ROM{}/VTABLE{}.DAT", rom_id, rom_id));
+            let ftable_dat_path = ffxi_path.join(format!("ROM{}/FTABLE{}.DAT", rom_id, rom_id));
+            if Self::insert_into_id_map(&mut id_map, rom_id, vtable_dat_path, ftable_dat_path)
+                .is_err()
+            {
+                break;
+            }
+        }
+
+        Ok(id_map)
+    }
+
     fn insert_into_id_map(
         id_map: &mut HashMap<DatId, DatPath>,
         rom_id: u8,
@@ -90,93 +196,6 @@ impl DatContext {
             .collect::<Vec<_>>();
 
         Ok(())
-    }
-
-    pub fn from_path(mut ffxi_path: PathBuf) -> Result<Self> {
-        let mut id_map = HashMap::new();
-
-        match ffxi_path
-            .iter()
-            .last()
-            .and_then(|part| part.to_str())
-            .ok_or(anyhow!("Invalid path"))?
-        {
-            "FINAL FANTASY XI" => {
-                // Correct folder
-            }
-            "SquareEnix" => {
-                ffxi_path.push("FINAL FANTASY XI");
-            }
-            _ => {
-                ffxi_path.push("SquareEnix");
-                ffxi_path.push("FINAL FANTASY XI");
-                if !ffxi_path.exists() {
-                    return Err(anyhow!("Could not find a FFXI install at the given path."));
-                }
-            }
-        }
-
-        // Handle first non-numbered tables
-        let vtable_dat_path = ffxi_path.join("VTABLE.DAT");
-        let ftable_dat_path = ffxi_path.join("FTABLE.DAT");
-
-        Self::insert_into_id_map(&mut id_map, 1, vtable_dat_path, ftable_dat_path)?;
-
-        for rom_id in 2u8.. {
-            let vtable_dat_path = ffxi_path.join(format!("ROM{}/VTABLE{}.DAT", rom_id, rom_id));
-            let ftable_dat_path = ffxi_path.join(format!("ROM{}/FTABLE{}.DAT", rom_id, rom_id));
-            if Self::insert_into_id_map(&mut id_map, rom_id, vtable_dat_path, ftable_dat_path)
-                .is_err()
-            {
-                break;
-            }
-        }
-
-        let mut result = Self {
-            ffxi_path,
-            id_map,
-            zone_name_to_id_map: Default::default(),
-            zone_id_to_name: Default::default(),
-        };
-
-        let zone_data = result.get_data_from_dat(&DatIdMapping::get().area_names)?;
-
-        let mut previous_names = HashSet::new();
-        for (zone_id, (_, zone_string_list)) in zone_data.dat.lists.into_iter().enumerate() {
-            let display_content = zone_string_list
-                .content
-                .first()
-                .ok_or_else(|| anyhow!("No string found for zone {}.", zone_id))?
-                .clone();
-
-            let mut display_name = match display_content {
-                Dmsg2Content::String { string } => string,
-                Dmsg2Content::Flags { .. } => {
-                    return Err(anyhow!("Expected string content for zone name."))
-                }
-            };
-
-            if display_name.is_empty() {
-                display_name = format!("_unnamed_ID-{}", zone_id);
-            } else if previous_names.contains(&display_name) {
-                display_name = format!("{} ID-{}", display_name, zone_id);
-            }
-            previous_names.insert(display_name.clone());
-
-            let zone_name = ZoneName {
-                file_name: sanitize_filename(&display_name),
-                display_name,
-            };
-
-            result
-                .zone_id_to_name
-                .insert(zone_id as u16, zone_name.clone());
-            result
-                .zone_name_to_id_map
-                .insert(zone_name.file_name, zone_id as u16);
-        }
-
-        Ok(result)
     }
 
     pub fn get_data_from_dat_id<T: DatFormat>(&self, id: DatId) -> Result<T, DatError> {
