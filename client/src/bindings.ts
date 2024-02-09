@@ -66,10 +66,10 @@ export function copyLookupTables() {
     return invoke()<null>("copy_lookup_tables")
 }
 
-export type DatProcessorOutputKind = "Dat" | "Yaml"
 export type DatDescriptor = { type: "DataMenu" } | { type: "AbilityNames" } | { type: "AbilityDescriptions" } | { type: "AreaNames" } | { type: "AreaNamesAlt" } | { type: "CharacterSelect" } | { type: "ChatFilterTypes" } | { type: "DayNames" } | { type: "Directions" } | { type: "EquipmentLocations" } | { type: "ErrorMessages" } | { type: "IngameMessages1" } | { type: "IngameMessages2" } | { type: "JobNames" } | { type: "KeyItems" } | { type: "MenuItemsDescription" } | { type: "MenuItemsText" } | { type: "MoonPhases" } | { type: "PolMessages" } | { type: "RaceNames" } | { type: "RegionNames" } | { type: "SpellNames" } | { type: "SpellDescriptions" } | { type: "StatusInfo" } | { type: "StatusNames" } | { type: "TimeAndPronouns" } | { type: "Titles" } | { type: "Misc1" } | { type: "Misc2" } | { type: "WeatherTypes" } | { type: "Armor" } | { type: "Armor2" } | { type: "Currency" } | { type: "GeneralItems" } | { type: "GeneralItems2" } | { type: "PuppetItems" } | { type: "UsableItems" } | { type: "Weapons" } | { type: "VouchersAndSlips" } | { type: "Monipulator" } | { type: "Instincts" } | { type: "MonsterSkillNames" } | { type: "StatusNamesDialog" } | { type: "EmoteMessages" } | { type: "SystemMessages1" } | { type: "SystemMessages2" } | { type: "SystemMessages3" } | { type: "SystemMessages4" } | { type: "UnityDialogs" } | { type: "EntityNames"; index: number } | { type: "Dialog"; index: number } | { type: "Dialog2"; index: number }
 export type ZoneInfo = { id: number; name: string }
 export type FileNotification = { dat_descriptor: DatDescriptor; is_delete: boolean }
-export type DatProcessingState = "Working" | { Finished: string } | { Error: string }
+export type DatProcessorOutputKind = "Dat" | "Yaml"
 export type PersistenceData = { ffxi_path: string | null; recent_projects: string[] }
 export type DatProcessorMessage = { dat_descriptor: DatDescriptor; output_kind: DatProcessorOutputKind; state: DatProcessingState }
+export type DatProcessingState = "Working" | { Finished: string } | { Error: string }
