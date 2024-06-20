@@ -1,14 +1,13 @@
 import { createStore } from "solid-js/store";
-import { DatDescriptor } from "../bindings";
-import * as commands from "../bindings";
+import { DatDescriptor, DatProcessorOutputKind, DatProcessorMessage } from "../bindings";
 import { listen } from "@tauri-apps/api/event";
 import { createEffect, createSignal } from "solid-js";
 import { createFoldersStore } from "./folders";
 
 
-type DatDescriptorNames = commands.DatDescriptor["type"];
+type DatDescriptorNames = DatDescriptor["type"];
 type ProcessingState = {
-  [kind in commands.DatProcessorOutputKind]: {
+  [kind in DatProcessorOutputKind]: {
     [name in DatDescriptorNames]?: { [key: number]: boolean }
   }
 }
@@ -33,7 +32,7 @@ export function createProcessingStore(
   });
 
   // Listen for changes to the YAML data files
-  listen<commands.DatProcessorMessage>("processing", (event) => {
+  listen<DatProcessorMessage>("processing", (event) => {
     const payload = event.payload;
     if (event.payload.state == "Working") {
       setTotalProcessingCount(totalProcessingCount() + 1);
@@ -67,7 +66,7 @@ export function createProcessingStore(
     totalProcessingCount,
     canProcess,
 
-    isProcessing: (outputKind: commands.DatProcessorOutputKind, descriptor: DatDescriptor): boolean | undefined => {
+    isProcessing: (outputKind: DatProcessorOutputKind, descriptor: DatDescriptor): boolean | undefined => {
       const key = "index" in descriptor ? descriptor.index : 0;
       return processing[outputKind]?.[descriptor.type]?.[key];
     },

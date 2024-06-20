@@ -9,15 +9,16 @@ import {
   onMount,
 } from "solid-js";
 import fusejs from "fuse.js";
-import * as commands from "../bindings";
+import { commands, DatDescriptor } from "../bindings";
 import { useData } from "../store";
+import { unwrap } from "../util";
 
 interface DatTableProps<T extends { [key in Column]: any }, Column extends keyof T> {
   title: string;
   rowsResourceFetcher: () => Promise<T[]>,
   columns: { name: string, key: Column }[],
   defaultSortColumn: Column,
-  toDatDescriptor: (t: T) => commands.DatDescriptor,
+  toDatDescriptor: (t: T) => DatDescriptor,
 }
 
 function DatTable<T extends { [key in Column]: any }, Column extends keyof T & string>
@@ -193,7 +194,7 @@ function DatTable<T extends { [key in Column]: any }, Column extends keyof T & s
                             <Match when={true}>
                               <span
                                 class="clickable"
-                                onclick={() => commands.makeYaml(descriptor)}
+                                onclick={async () => unwrap(await commands.makeYaml(descriptor))}
                               >
                                 Export from DAT
                               </span>
@@ -209,7 +210,7 @@ function DatTable<T extends { [key in Column]: any }, Column extends keyof T & s
                             <Match when={hasWorkingFile(descriptor)}>
                               <span
                                 class="clickable"
-                                onclick={() => commands.makeDat(descriptor)}
+                                onclick={async () => unwrap(await commands.makeDat(descriptor))}
                               >
                                 Make DAT
                               </span>

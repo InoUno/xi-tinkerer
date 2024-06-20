@@ -1,9 +1,10 @@
 import { createStore } from "solid-js/store";
 import { DatDescriptor } from "../bindings";
-import * as commands from "../bindings";
+import { commands, FileNotification } from "../bindings";
 import { listen } from "@tauri-apps/api/event";
 import { createEffect, createSignal } from "solid-js";
 import { createFoldersStore } from "./folders";
+import { unwrap } from "../util";
 
 type DatDescriptorNames = DatDescriptor["type"];
 type WorkingFilesState = {
@@ -36,7 +37,7 @@ export function createWorkingFilesStore(
 
       commands.getWorkingFiles().then((loadedWorkingFiles) => {
         setWorkingFiles({});
-        for (const datDescriptor of loadedWorkingFiles) {
+        for (const datDescriptor of unwrap(loadedWorkingFiles)) {
           setWorkingFileFromDescriptor(datDescriptor, false);
         }
       });
@@ -44,7 +45,7 @@ export function createWorkingFilesStore(
   });
 
   // Listen for changes to the YAML data files
-  listen<commands.FileNotification>("file-change", (event) => {
+  listen<FileNotification>("file-change", (event) => {
     const payload = event.payload;
     setWorkingFileFromDescriptor(payload.dat_descriptor, payload.is_delete);
   });

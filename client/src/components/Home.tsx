@@ -1,7 +1,8 @@
 import ProjectSelect from "./ProjectSelect";
 import FFXISelect from "./FFXISelect";
-import * as commands from "../bindings";
+import { commands } from "../bindings";
 import { useData } from "../store";
+import { unwrap } from "../util";
 
 function Home() {
   const {
@@ -25,7 +26,7 @@ function Home() {
         >
           Make all DATs
         </button>
-        <button onclick={() => commands.copyLookupTables()}>
+        <button onclick={async () => unwrap(await commands.copyLookupTables())}>
           Copy lookup tables to project directory
         </button>
       </div>

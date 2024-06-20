@@ -1,20 +1,16 @@
-import { message } from "@tauri-apps/api/dialog";
-import {
-  loadPersistenceData,
-  selectFfxiFolder,
-  selectProjectFolder,
-} from "../bindings";
+import { message } from "@tauri-apps/plugin-dialog";
+import { commands } from "../bindings";
 import { createEffect, createResource, createSignal } from "solid-js";
-import { promptFolder } from "../util";
+import { promptFolder, unwrap } from "../util";
 
 export function createFoldersStore() {
   const [getDatFolder, setDatFolderLocal] = createSignal<string | null>();
 
   // FFXI DAT folder
   const setDatFolder = (path: string | null) => {
-    selectFfxiFolder(path)
+    commands.selectFfxiFolder(path)
       .then((new_path) => {
-        setDatFolderLocal(new_path);
+        setDatFolderLocal(unwrap(new_path));
       })
       .catch((err) => {
         message(err);
@@ -31,9 +27,9 @@ export function createFoldersStore() {
   const setProjectFolder = async (path: string | null) => {
     setProjectFolderLocal(path);
 
-    return selectProjectFolder(path)
+    return commands.selectProjectFolder(path)
       .then((recentFolders) => {
-        setRecentProjectFolders(recentFolders);
+        setRecentProjectFolders(unwrap(recentFolders));
       })
       .catch((err) => {
         message(err);
@@ -47,7 +43,7 @@ export function createFoldersStore() {
   >([]);
 
   // Load data
-  const [appPersistence] = createResource(loadPersistenceData);
+  const [appPersistence] = createResource(async () => unwrap(await commands.loadPersistenceData()));
 
   createEffect(() => {
     setProjectFolderLocal(appPersistence()?.recent_projects[0]);

@@ -1,4 +1,5 @@
-import { open } from "@tauri-apps/api/dialog";
+import { open } from "@tauri-apps/plugin-dialog";
+import { Result } from "./bindings";
 
 export async function promptFolder(
   setFolder: (path: string | null) => any,
@@ -13,4 +14,11 @@ export async function promptFolder(
   if (selected) {
     setFolder(selected);
   }
+}
+
+export function unwrap<T, E>(result: Result<T, E>): T {
+  if (result.status == "error") {
+    throw result.error;
+  }
+  return result.data;
 }

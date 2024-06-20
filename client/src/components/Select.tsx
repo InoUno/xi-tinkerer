@@ -19,7 +19,7 @@ const Select: Component<{
   const [show, setShow] = createSignal(false);
   const [selected, setSelected] = createSignal(0);
 
-  let inputRef: HTMLInputElement | undefined = undefined;
+  let inputRef: HTMLInputElement = undefined!;
 
   const filteredOptions = () =>
     props.options.filter((el) => el.includes(text()));

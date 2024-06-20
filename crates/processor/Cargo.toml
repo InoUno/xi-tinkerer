@@ -10,6 +10,6 @@ dats = { path = "../dats" }
 threadpool = "1.8.1"
 serde = "1.0.180"
 serde_yaml = "0.9.25"
-specta = "1.0.5"
+specta = "2.0.0-rc.12"
 tokio = { version = "1.29.1", features = ["full"] }
 walkdir = "2.4.0"

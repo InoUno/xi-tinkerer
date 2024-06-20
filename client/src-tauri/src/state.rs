@@ -22,6 +22,7 @@ pub struct AppStateData {
     pub processor: Arc<DatProcessor>,
     pub persistence: PersistenceData,
     watcher: RecommendedWatcher,
+    local_data_dir: PathBuf,
 }
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -32,7 +33,8 @@ pub struct FileNotification {
 
 impl AppStateData {
     pub fn new(app: &App) -> Self {
-        let persistence = PersistenceData::load();
+        let local_data_dir = app.path().local_data_dir().unwrap();
+        let persistence = PersistenceData::load(&local_data_dir);
 
         let dat_context = persistence
             .ffxi_path
@@ -43,7 +45,7 @@ impl AppStateData {
         let (tx, rx) = std::sync::mpsc::channel();
         let mut watcher = notify::recommended_watcher(tx).unwrap();
 
-        let handle = app.handle();
+        let handle = app.handle().clone();
         thread::spawn(move || Self::watch_handler(rx, handle));
 
         let project_path = persistence.recent_projects.get(0).cloned();
@@ -55,10 +57,10 @@ impl AppStateData {
         let (tx, rx) = mpsc::channel();
         let processor = Arc::new(DatProcessor::new(tx));
 
-        let app_handle = app.handle();
+        let app_handle = app.handle().clone();
         async_runtime::spawn(async move {
             while let Ok(msg) = rx.recv() {
-                if let Err(err) = app_handle.emit_all("processing", msg) {
+                if let Err(err) = app_handle.emit("processing", msg) {
                     eprintln!("Failed to emit message to all: {err}");
                 }
             }
@@ -70,6 +72,7 @@ impl AppStateData {
             persistence,
             watcher,
             processor,
+            local_data_dir,
         }
     }
 
@@ -87,7 +90,7 @@ impl AppStateData {
 
         self.dat_context = context;
         self.persistence.ffxi_path = new_ffxi_path.clone();
-        self.persistence.save();
+        self.persistence.save(&self.local_data_dir);
 
         Ok(new_ffxi_path)
     }
@@ -117,7 +120,7 @@ impl AppStateData {
                 .cloned()
                 .collect();
 
-            self.persistence.save();
+            self.persistence.save(&self.local_data_dir);
 
             // Start watching new project data directory
             let _ = self.watcher.watch(&project_path, RecursiveMode::Recursive);
@@ -166,7 +169,7 @@ impl AppStateData {
                     dat_descriptor,
                     is_delete,
                 };
-                let _ = app_handle.emit_all("file-change", notification);
+                let _ = app_handle.emit("file-change", notification);
             }
         }
 

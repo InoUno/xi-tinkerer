@@ -14,10 +14,10 @@ use state::AppStateData;
 use tauri::Manager;
 use tracing_subscriber::EnvFilter;
 
-#[cfg(debug_assertions)]
-use specta::collect_types;
-#[cfg(debug_assertions)]
-use tauri_specta::ts;
+// #[cfg(debug_assertions)]
+// use specta::collect_types;
+// #[cfg(debug_assertions)]
+// use tauri_specta::ts;
 
 pub const RAW_DATA_DIR: &'static str = "raw_data";
 pub const LOOKUP_TABLE_DIR: &'static str = "lookup_tables";
@@ -27,9 +27,8 @@ pub const ZONE_MAPPING_FILE: &'static str = "zones.yml";
 fn main() {
     check_cli();
 
-    #[cfg(debug_assertions)]
-    ts::export(
-        collect_types![
+    let speta_builder = {
+        let builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![
             commands::dummy_event_type_gen,
             commands::select_ffxi_folder,
             commands::select_project_folder,
@@ -44,10 +43,13 @@ fn main() {
             commands::make_dat,
             commands::make_yaml,
             commands::copy_lookup_tables,
-        ],
-        "../src/bindings.ts",
-    )
-    .unwrap();
+        ]);
+
+        #[cfg(debug_assertions)]
+        let builder = builder.path("../src/bindings.ts").header("// @ts-nocheck");
+
+        builder.build().unwrap()
+    };
 
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
@@ -55,6 +57,8 @@ fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_dialog::init())
+        .invoke_handler(speta_builder)
         .invoke_handler(tauri::generate_handler![
             commands::select_ffxi_folder,
             commands::select_project_folder,

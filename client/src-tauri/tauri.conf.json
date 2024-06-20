@@ -2,50 +2,33 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "XI Tinkerer",
-    "version": "0.3.0"
+  "bundle": {
+    "active": true,
+    "targets": [
+      "deb",
+      "appimage",
+      "nsis",
+      "app",
+      "dmg",
+      "updater"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "dialog": {
-        "open": true,
-        "message": true
-      },
-      "fs": {
-        "all": true,
-        "scope": [
-          "$APPLOCALDATA/*"
-        ]
-      },
-      "path": {
-        "all": true
-      },
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": ["deb", "appimage", "nsis", "app", "dmg", "updater"],
-      "identifier": "inouno.xi-tinkerer",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    },
-    "security": {
-      "csp": null
-    },
+  "productName": "XI Tinkerer",
+  "version": "0.3.0",
+  "identifier": "inouno.xi-tinkerer",
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": false,
     "windows": [
       {
         "fullscreen": false,
@@ -54,6 +37,9 @@
         "width": 1024,
         "height": 768
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

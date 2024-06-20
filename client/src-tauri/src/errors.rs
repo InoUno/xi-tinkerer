@@ -9,6 +9,12 @@ pub enum AppError {
     Anyhow(#[from] anyhow::Error),
 }
 
+impl specta::Type for AppError {
+    fn inline(_type_map: &mut specta::TypeMap, _generics: specta::Generics) -> specta::DataType {
+        specta::DataType::Any
+    }
+}
+
 // we must manually implement serde::Serialize
 impl serde::Serialize for AppError {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>

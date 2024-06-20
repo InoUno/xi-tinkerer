@@ -2,7 +2,6 @@ use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use tauri::api;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct PersistenceData {
@@ -13,22 +12,21 @@ pub struct PersistenceData {
 impl PersistenceData {
     const FILENAME: &'static str = "persistence.yml";
 
-    fn load_existing_data() -> Option<Self> {
-        let data: PersistenceData = serde_yaml::from_str(
-            &fs::read_to_string(api::path::local_data_dir()?.join(Self::FILENAME)).ok()?,
-        )
-        .ok()?;
+    fn load_existing_data(local_data_dir: &PathBuf) -> Option<Self> {
+        let data: PersistenceData =
+            serde_yaml::from_str(&fs::read_to_string(local_data_dir.join(Self::FILENAME)).ok()?)
+                .ok()?;
 
         Some(data)
     }
 
-    pub fn load() -> Self {
-        Self::load_existing_data().unwrap_or_default()
+    pub fn load(local_data_dir: &PathBuf) -> Self {
+        Self::load_existing_data(local_data_dir).unwrap_or_default()
     }
 
-    pub fn save(&self) -> Option<()> {
+    pub fn save(&self, local_data_dir: &PathBuf) -> Option<()> {
         let str = serde_yaml::to_string(self).ok()?;
-        fs::write(api::path::local_data_dir()?.join(Self::FILENAME), str).ok()?;
+        fs::write(local_data_dir.join(Self::FILENAME), str).ok()?;
 
         Some(())
     }

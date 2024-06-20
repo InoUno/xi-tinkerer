@@ -4,8 +4,9 @@ import Home from "./components/Home";
 import { Routes, Route } from "@solidjs/router";
 import { HiSolidAdjustmentsHorizontal, HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
 import DatTable from "./components/DatTable";
-import * as commands from "./bindings";
+import { commands } from "./bindings";
 import Logs from "./components/Logs";
+import { unwrap } from "./util";
 
 const navItems: NavItem[] = [
   {
@@ -72,7 +73,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Strings"
-                    rowsResourceFetcher={() => commands.getStandaloneStringDats()}
+                    rowsResourceFetcher={async () => unwrap(await commands.getStandaloneStringDats())}
                     columns={[{ name: "Name", key: "type" }]}
                     defaultSortColumn="type"
                     toDatDescriptor={(datDescriptor) => datDescriptor}
@@ -85,7 +86,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Items"
-                    rowsResourceFetcher={() => commands.getItemDats()}
+                    rowsResourceFetcher={async () => unwrap(await commands.getItemDats())}
                     columns={[{ name: "Name", key: "type" }]}
                     defaultSortColumn="type"
                     toDatDescriptor={(datDescriptor) => datDescriptor}
@@ -98,7 +99,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Misc."
-                    rowsResourceFetcher={() => commands.getMiscDats()}
+                    rowsResourceFetcher={async () => unwrap(await commands.getMiscDats())}
                     columns={[{ name: "Name", key: "type" }]}
                     defaultSortColumn="type"
                     toDatDescriptor={(datDescriptor) => datDescriptor}
@@ -111,7 +112,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Global Dialog"
-                    rowsResourceFetcher={() => commands.getGlobalDialogDats()}
+                    rowsResourceFetcher={async () => unwrap(await commands.getGlobalDialogDats())}
                     columns={[{ name: "Name", key: "type" }]}
                     defaultSortColumn="type"
                     toDatDescriptor={(datDescriptor) => datDescriptor}
@@ -124,7 +125,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Entity Names"
-                    rowsResourceFetcher={() => commands.getZonesForType({ type: "EntityNames", index: 0 })}
+                    rowsResourceFetcher={async () => unwrap(await commands.getZonesForType({ type: "EntityNames", index: 0 }))}
                     columns={[{ name: "Name", key: "name" }, { name: "ID", key: "id" }]}
                     defaultSortColumn="name"
                     toDatDescriptor={(zone) => ({ type: "EntityNames", index: zone.id })}
@@ -137,7 +138,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Dialog"
-                    rowsResourceFetcher={() => commands.getZonesForType({ type: "Dialog", index: 0 })}
+                    rowsResourceFetcher={async () => unwrap(await commands.getZonesForType({ type: "Dialog", index: 0 }))}
                     columns={[{ name: "Name", key: "name" }, { name: "ID", key: "id" }]}
                     defaultSortColumn="name"
                     toDatDescriptor={(zone) => ({ type: "Dialog", index: zone.id })}
@@ -150,7 +151,7 @@ function App() {
                 component={() => (
                   <DatTable
                     title="Dialog (2)"
-                    rowsResourceFetcher={() => commands.getZonesForType({ type: "Dialog2", index: 0 })}
+                    rowsResourceFetcher={async () => unwrap(await commands.getZonesForType({ type: "Dialog2", index: 0 }))}
                     columns={[{ name: "Name", key: "name" }, { name: "ID", key: "id" }]}
                     defaultSortColumn="name"
                     toDatDescriptor={(zone) => ({ type: "Dialog2", index: zone.id })}
