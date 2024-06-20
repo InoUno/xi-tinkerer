@@ -3,6 +3,7 @@ import Statusbar from "./components/Statusbar";
 import Home from "./components/Home";
 import { Routes, Route } from "@solidjs/router";
 import { HiSolidAdjustmentsHorizontal, HiSolidChatBubbleLeftRight, HiSolidCog8Tooth, HiSolidPencilSquare, HiSolidShoppingBag, HiSolidUser } from "solid-icons/hi";
+import Table from "./components/Table";
 import DatTable from "./components/DatTable";
 import { commands } from "./bindings";
 import Logs from "./components/Logs";
@@ -12,6 +13,11 @@ const navItems: NavItem[] = [
   {
     name: "Home",
     path: "/",
+    icon: <HiSolidCog8Tooth />,
+  },
+  {
+    name: "Browse",
+    path: "/browse",
     icon: <HiSolidCog8Tooth />,
   },
   { header: "Strings" },
@@ -67,6 +73,18 @@ function App() {
           <div class="content flex-grow overflow-y-auto w-full">
             <Routes>
               <Route path="/" component={Home}></Route>
+
+              <Route
+                path="/browse"
+                component={() => (
+                  <Table
+                    title="Browse"
+                    rowsResourceFetcher={async () => unwrap(await commands.browseDats())}
+                    columns={[{ name: "Name", key: "path" }, { name: "ID", key: "id" }]}
+                    defaultSortColumn="path"
+                  />
+                )}
+              ></Route>
 
               <Route
                 path="/strings"

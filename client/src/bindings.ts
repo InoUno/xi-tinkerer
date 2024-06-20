@@ -68,6 +68,14 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
+async browseDats() : Promise<Result<BrowseInfo[], any>> {
+try {
+    return { status: "ok", data: await TAURI_INVOKE("browse_dats") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getZonesForType(datDescriptor: DatDescriptor) : Promise<Result<ZoneInfo[], any>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("get_zones_for_type", { datDescriptor }) };
@@ -128,6 +136,7 @@ try {
 
 /** user-defined types **/
 
+export type BrowseInfo = { path: string; id: number }
 export type DatDescriptor = { type: "DataMenu" } | { type: "AbilityNames" } | { type: "AbilityDescriptions" } | { type: "AreaNames" } | { type: "AreaNamesAlt" } | { type: "CharacterSelect" } | { type: "ChatFilterTypes" } | { type: "DayNames" } | { type: "Directions" } | { type: "EquipmentLocations" } | { type: "ErrorMessages" } | { type: "IngameMessages1" } | { type: "IngameMessages2" } | { type: "JobNames" } | { type: "KeyItems" } | { type: "MenuItemsDescription" } | { type: "MenuItemsText" } | { type: "MoonPhases" } | { type: "PolMessages" } | { type: "RaceNames" } | { type: "RegionNames" } | { type: "SpellNames" } | { type: "SpellDescriptions" } | { type: "StatusInfo" } | { type: "StatusNames" } | { type: "TimeAndPronouns" } | { type: "Titles" } | { type: "Misc1" } | { type: "Misc2" } | { type: "WeatherTypes" } | { type: "Armor" } | { type: "Armor2" } | { type: "Currency" } | { type: "GeneralItems" } | { type: "GeneralItems2" } | { type: "PuppetItems" } | { type: "UsableItems" } | { type: "Weapons" } | { type: "VouchersAndSlips" } | { type: "Monipulator" } | { type: "Instincts" } | { type: "MonsterSkillNames" } | { type: "StatusNamesDialog" } | { type: "EmoteMessages" } | { type: "SystemMessages1" } | { type: "SystemMessages2" } | { type: "SystemMessages3" } | { type: "SystemMessages4" } | { type: "UnityDialogs" } | { type: "EntityNames"; index: number } | { type: "Dialog"; index: number } | { type: "Dialog2"; index: number }
 export type DatProcessingState = "Working" | { Finished: string } | { Error: string }
 export type DatProcessorMessage = { dat_descriptor: DatDescriptor; output_kind: DatProcessorOutputKind; state: DatProcessingState }

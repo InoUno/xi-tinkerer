@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{path::PathBuf, sync::Arc};
 
 use anyhow::anyhow;
 use dats::{
@@ -142,4 +142,21 @@ pub async fn get_zone_ids_for_type(
             vec![]
         }
     }
+}
+
+#[derive(Serialize, specta::Type)]
+pub struct BrowseInfo {
+    path: PathBuf,
+    id: u32,
+}
+
+pub async fn get_browse_info(dat_context: Arc<DatContext>) -> Vec<BrowseInfo> {
+    dat_context
+        .id_map
+        .iter()
+        .map(|entry| BrowseInfo {
+            path: entry.1.to_path(),
+            id: entry.0.get_inner(),
+        })
+        .collect()
 }

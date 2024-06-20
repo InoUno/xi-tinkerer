@@ -27,19 +27,11 @@ impl DatId {
             .get(&self)
             .ok_or(DatError::DatMappingNotFound(self.clone()))?;
 
-        let dat_path_buf: PathBuf = [
-            if dat_path.rom_id == 1 {
-                "ROM".to_string()
-            } else {
-                format!("ROM{}", dat_path.rom_id)
-            },
-            dat_path.folder_id.to_string(),
-            format!("{}.DAT", dat_path.file_id),
-        ]
-        .into_iter()
-        .collect();
+        Ok(dat_path.to_path())
+    }
 
-        Ok(dat_path_buf)
+    pub fn get_inner(&self) -> u32 {
+        self.0
     }
 }
 
@@ -156,6 +148,22 @@ impl DatPath {
             folder_id: folder_part.parse()?,
             file_id: file_part[..file_part.len() - 4].parse()?,
         })
+    }
+
+    pub fn to_path(&self) -> PathBuf {
+        let dat_path_buf: PathBuf = [
+            if self.rom_id == 1 {
+                "ROM".to_string()
+            } else {
+                format!("ROM{}", self.rom_id)
+            },
+            self.folder_id.to_string(),
+            format!("{}.DAT", self.file_id),
+        ]
+        .into_iter()
+        .collect();
+
+        dat_path_buf
     }
 }
 

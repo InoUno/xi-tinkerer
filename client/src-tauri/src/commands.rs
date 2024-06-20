@@ -10,7 +10,7 @@ use tracing_subscriber::fmt::MakeWriter;
 
 use crate::{
     app_persistence::PersistenceData,
-    dat_query::{self, ZoneInfo},
+    dat_query::{self, BrowseInfo, ZoneInfo},
     errors::AppError,
     state::{AppState, FileNotification},
     DAT_GENERATION_DIR, LOOKUP_TABLE_DIR, RAW_DATA_DIR, ZONE_MAPPING_FILE,
@@ -38,6 +38,18 @@ pub async fn select_project_folder<'a>(
 #[specta::specta]
 pub async fn load_persistence_data<'a>(state: AppState<'a>) -> Result<PersistenceData, AppError> {
     Ok(state.read().persistence.clone())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn browse_dats(state: AppState<'_>) -> Result<Vec<BrowseInfo>, AppError> {
+    let dat_context = state
+        .read()
+        .dat_context
+        .clone()
+        .ok_or(anyhow!("No DAT context."))?;
+
+    Ok(dat_query::get_browse_info(dat_context).await)
 }
 
 #[tauri::command]
