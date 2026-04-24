@@ -29,8 +29,8 @@ bitflags! {
         const Ex = 0x6040; // NoAuction + NoDelivery + NoTrade
 
         // Simple Flags - mostly assumed meanings
-        const WallHanging = 0x0001; // Used by furnishing like paintings.
-        const Flag01 = 0x0002;
+        const AugSendable = 0x0001;
+        const GmOnly = 0x0002;      // Only wearable by GMs. This is only on the Judge's Gear.
         const MysteryBox = 0x0004;  // Can be gained from Gobbie Mystery Box
         const MogGarden = 0x0008;   // Can use in Mog Garden
         const CanSendPOL = 0x0010;
