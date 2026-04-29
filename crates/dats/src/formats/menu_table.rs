@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use crate::{
-    enums::{Element, JobEnum, MagicType, SkillType},
+    enums::{AreaShapeType, Element, JobEnum, MagicType, SkillType, SpellDistance},
     serde_base64, serde_hex,
     utils::{
         decode_data_block_masked, decode_text_block, encode_data_block_masked, encode_text_block,
@@ -265,7 +265,12 @@ pub struct MagicInfo {
     recast_time: u8,
     level_required: BTreeMap<JobEnum, u16>,
     id: u16,
-    icon_id: u8,
+    icon_id: u16,
+    unknown_0x42: u16,
+    unknown_0x44: u8,
+    range: SpellDistance,
+    aoe_range: SpellDistance,
+    area_shape: AreaShapeType,
 
     #[serde(with = "serde_hex")]
     unknowns: Vec<u8>,
@@ -304,6 +309,11 @@ impl SectionInfo for MagicInfo {
                 .collect(),
             id: data_walker.step()?,
             icon_id: data_walker.step()?,
+            unknown_0x42: data_walker.step()?,
+            unknown_0x44: data_walker.step()?,
+            range: SpellDistance::from(data_walker.step::<u8>()?),
+            aoe_range: SpellDistance::from(data_walker.step::<u8>()?),
+            area_shape: AreaShapeType::from(data_walker.step::<u8>()?),
 
             unknowns: data_walker
                 .take_bytes(data_walker.remaining() - 1)?
@@ -343,6 +353,11 @@ impl SectionInfo for MagicInfo {
 
         data_walker.write(self.id);
         data_walker.write(self.icon_id);
+        data_walker.write(self.unknown_0x42);
+        data_walker.write(self.unknown_0x44);
+        data_walker.write::<u8>(self.range.into());
+        data_walker.write::<u8>(self.aoe_range.into());
+        data_walker.write::<u8>(self.area_shape.into());
         data_walker.write_bytes(&self.unknowns);
 
         data_walker.write::<u8>(0xFF);

@@ -235,6 +235,45 @@ pub enum JobEnum {
 }
 
 #[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, IntoPrimitive,
+)]
+#[repr(u8)]
+pub enum SpellDistance {
+    #[default]
+    None = 0,
+    D1 = 1,
+    D3 = 2,
+    D4 = 3,
+    D5 = 4,
+    D6 = 5,
+    D7 = 6,
+    D8 = 7,
+    D10 = 8,
+    D12 = 9,
+    D14 = 10,
+    D16 = 11,
+    D20 = 12,
+    D25 = 13,
+    D30 = 14,
+    SelfTarget = 15,
+}
+
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, IntoPrimitive,
+)]
+#[repr(u8)]
+pub enum AreaShapeType {
+    Single = 0,
+    Sphere = 1,
+    Cone = 2,
+    CasterSphere = 3,
+
+    #[num_enum(catch_all)]
+    #[serde(untagged)]
+    Unknown(u8),
+}
+
+#[derive(
     Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TryFromPrimitive, IntoPrimitive,
 )]
 #[repr(u32)]
