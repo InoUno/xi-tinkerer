@@ -195,6 +195,11 @@ pub struct AbilityInfo {
     shared_timer_id: u16,
     valid_targets: ValidTargets,
     tp_cost: i16,
+    unknown_0x0e: u8,
+    unknown_0x0f: u8,
+    range: SpellDistance,
+    aoe_range: SpellDistance,
+    area_shape: AreaShapeType,
 
     #[serde(with = "serde_hex")]
     unknowns: Vec<u8>,
@@ -220,6 +225,11 @@ impl SectionInfo for AbilityInfo {
             shared_timer_id: data_walker.step::<u16>()?,
             valid_targets: ValidTargets::from_bits(data_walker.step::<u16>()?).unwrap_or_default(),
             tp_cost: data_walker.step::<i16>()?,
+            unknown_0x0e: data_walker.step()?,
+            unknown_0x0f: data_walker.step()?,
+            range: SpellDistance::from(data_walker.step::<u8>()?),
+            aoe_range: SpellDistance::from(data_walker.step::<u8>()?),
+            area_shape: AreaShapeType::from(data_walker.step::<u8>()?),
             unknowns: data_walker
                 .take_bytes(data_walker.remaining() - 1)?
                 .to_vec(),
@@ -241,6 +251,11 @@ impl SectionInfo for AbilityInfo {
         data_walker.write(self.shared_timer_id);
         data_walker.write(self.valid_targets.bits());
         data_walker.write(self.tp_cost);
+        data_walker.write(self.unknown_0x0e);
+        data_walker.write(self.unknown_0x0f);
+        data_walker.write::<u8>(self.range.into());
+        data_walker.write::<u8>(self.aoe_range.into());
+        data_walker.write::<u8>(self.area_shape.into());
         data_walker.write_bytes(&self.unknowns);
 
         data_walker.write::<u8>(0xFF);
