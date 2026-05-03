@@ -1,3 +1,4 @@
+pub mod auto_translate;
 pub mod dialog;
 pub mod dmsg_list;
 pub mod dmsg_table;

@@ -57,6 +57,7 @@ pub static STANDALONE_DATS: &'static [DatDescriptorInfo] = {
         DatDescriptor::AreaNamesShort,
         DatDescriptor::AreaNamesAlt,
         DatDescriptor::Augments,
+        DatDescriptor::AutoTranslate,
         DatDescriptor::BlueMagic,
         DatDescriptor::CallMount,
         DatDescriptor::CharacterSelect,
