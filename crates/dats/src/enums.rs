@@ -184,6 +184,7 @@ pub enum MagicType {
     BardSong = 5,
     BlueMagic = 6,
     Geomancy = 7,
+    TrustMagic = 8,
 
     #[num_enum(catch_all)]
     #[serde(untagged)]
