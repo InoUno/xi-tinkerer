@@ -168,6 +168,7 @@ define_dat_files! {
             VouchersAndSlips => "vouchers_and_slips",
             Monipulator => "monipulator",
             Instincts => "instincts",
+            Furniture => "furniture",
         },
 
         // Global dialog

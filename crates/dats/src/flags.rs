@@ -143,3 +143,26 @@ bitflags! {
     }
 }
 serde_bitflags!(JobFlag);
+
+bitflags! {
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
+    pub struct FurniturePlacement: u16 {
+        const CanBeHung = 0x0001;
+        const CanBePut = 0x0002;
+        const CanPutOn = 0x0004;
+        const Bit_0x0008 = 0x0008;
+        const Bit_0x0010 = 0x0010;
+        const Bit_0x0020 = 0x0020;
+        const Bit_0x0040 = 0x0040;
+        const Bit_0x0080 = 0x0080;
+        const Bit_0x0100 = 0x0100;
+        const Bit_0x0200 = 0x0200;
+        const Bit_0x0400 = 0x0400;
+        const Bit_0x0800 = 0x0800;
+        const Bit_0x1000 = 0x1000;
+        const Bit_0x2000 = 0x2000;
+        const Bit_0x4000 = 0x4000;
+        const Bit_0x8000 = 0x8000;
+    }
+}
+serde_bitflags!(FurniturePlacement);

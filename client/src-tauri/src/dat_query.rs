@@ -151,6 +151,7 @@ pub static ITEM_DATS: &'static [DatDescriptorInfo] = {
         DatDescriptor::VouchersAndSlips,
         // DatDescriptor::Monipulator, // TODO: fields seems to be very different compared to other items
         DatDescriptor::Instincts,
+        DatDescriptor::Furniture,
     ])
 };
 
