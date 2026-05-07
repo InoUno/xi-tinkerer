@@ -10,6 +10,7 @@ use serde_derive::{Deserialize, Serialize};
 use crate::serde_base64;
 use crate::{
     dat_format::DatFormat,
+    enums::{StatusEffectCancellable, StatusEffectSystem},
     utils::{decode_data_block, encode_data_block},
 };
 
@@ -18,7 +19,8 @@ pub struct StatusInfo {
     id: u16,
     description: String,
 
-    flag: u16,
+    cancellable: StatusEffectCancellable,
+    system: StatusEffectSystem,
 
     #[serde(with = "serde_base64")]
     icon_bytes: Vec<u8>,
@@ -33,7 +35,8 @@ impl StatusInfo {
 
         let id = data_walker.step::<u16>()?;
 
-        let flag = data_walker.step::<u16>()?;
+        let cancellable = StatusEffectCancellable::from(data_walker.step::<u8>()?);
+        let system = StatusEffectSystem::from(data_walker.step::<u8>()?);
 
         data_walker.expect::<u32>(1)?;
         data_walker.expect::<u32>(12)?;
@@ -53,7 +56,8 @@ impl StatusInfo {
 
         Ok(StatusInfo {
             id,
-            flag,
+            cancellable,
+            system,
             description,
             icon_bytes,
         })
@@ -63,7 +67,8 @@ impl StatusInfo {
         let mut data_walker = VecByteWalker::with_size(0x280);
 
         data_walker.write(self.id);
-        data_walker.write(self.flag);
+        data_walker.write::<u8>(self.cancellable.into());
+        data_walker.write::<u8>(self.system.into());
 
         data_walker.write::<u32>(1);
         data_walker.write::<u32>(12);
@@ -150,7 +155,10 @@ impl DatFormat for StatusInfoTable {
 mod tests {
     use std::path::PathBuf;
 
-    use crate::dat_format::DatFormat;
+    use crate::{
+        dat_format::DatFormat,
+        enums::{StatusEffectCancellable, StatusEffectSystem},
+    };
 
     use super::StatusInfoTable;
 
@@ -166,6 +174,14 @@ mod tests {
             res.status_infos[0].description,
             "You have been knocked unconscious.".to_string()
         );
+        assert_eq!(res.status_infos[0].cancellable, StatusEffectCancellable::No);
+        assert_eq!(res.status_infos[0].system, StatusEffectSystem::NoTimerWarning);
+
+        assert_eq!(res.status_infos[1].cancellable, StatusEffectCancellable::No);
+        assert_eq!(res.status_infos[1].system, StatusEffectSystem::Normal);
+
+        assert_eq!(res.status_infos[32].cancellable, StatusEffectCancellable::FromMenu);
+        assert_eq!(res.status_infos[32].system, StatusEffectSystem::Normal);
 
         assert_eq!(
             res.status_infos[614].description,
